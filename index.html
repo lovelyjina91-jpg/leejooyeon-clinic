@@ -206,14 +206,10 @@
     </div>
     <div class="share-section">
       <h3>📱 지나티처에게 카톡으로 보내기</h3>
-      <p style="color:#666; font-size:14px; margin:6px 0 0;">결과 메시지가 클립보드에 복사돼요.</p>
-      <button type="button" class="kakao-btn" id="kakaoBtn">
-        <span style="font-size:20px;">💬</span> 카톡 메시지 복사 + 카톡 열기
+      <p style="color:#666; font-size:14px; margin:6px 0 0;">아래 버튼을 누르면 결과 메시지가 복사돼요.<br/>카카오톡 열어서 지나티처 채팅창에 붙여넣기 하세요!</p>
+      <button type="button" class="kakao-btn" id="copyBtn">
+        <span style="font-size:20px;">💬</span> 카카오톡 메시지 복사하기
       </button>
-      <div style="display:flex; gap:8px; margin-top:10px;">
-        <button type="button" class="btn ghost" style="flex:1;" id="copyBtn">📋 복사만</button>
-        <button type="button" class="btn secondary" style="flex:1;" id="downloadBtn">💾 결과 저장</button>
-      </div>
       <div class="preview-box" id="messagePreview"></div>
     </div>
   </section>
@@ -771,4 +767,9 @@
       '',
       wrongList.length > 0 ? '🔍 다시 봐야 할 문제:\n' + wrongList.join('\n') : '🎉 모든 문제를 다 맞혔어요!',
       '',
-  
+      '확인 부탁드려요~ 감사합니다! 💝'
+    ].join('\n');
+  }
+  function copyToClipboard(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(te
