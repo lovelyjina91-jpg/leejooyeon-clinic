@@ -793,19 +793,17 @@
     ];
 
     if (wrongBlocks.length > 0) {
-      lines.push('🔍 함께 봐주실 오답 ' + wrongBlocks.length + '개와 친절 해설입니다:');
+      lines.push('🔍 오답 ' + wrongBlocks.length + '개와 친절 해설입니다:');
       lines.push('');
       lines = lines.concat(wrongBlocks);
       lines.push('━━━━━━━━━━━━━━━');
-      lines.push('');
-      lines.push(STUDENT_NAME + ' 학생이 다음 시험에서 꼭 맞힐 수 있도록 한 번 더 봐주세요! 💝');
     } else {
       lines.push('🎉🎉 모든 문제를 다 맞혔어요!! 🎉🎉');
       lines.push(STUDENT_NAME + ' 학생 정말 자랑스러워요 ✨');
     }
 
     lines.push('');
-    lines.push('감사합니다, ' + TEACHER_NAME + '님!');
+    lines.push('수고했어~~ ㅎㅎㅎ');
     return lines.join('\n');
   }
   function copyToClipboard(text) {
