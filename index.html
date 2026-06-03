@@ -175,6 +175,7 @@
     <ul>
       <li>📝 총 <b>20문제</b> (객관식 10 + 주관식 10)</li>
       <li>📖 본문은 교과서 원문 그대로, 빈칸·질문·선지만 다르게 변형</li>
+      <li>⌨️ <b>키보드 단축</b>: 객관식은 <b>숫자 1~5</b>로 선택 후 <b>Enter</b>, 주관식은 답 입력 후 <b>Enter</b></li>
       <li>🔒 <b>모든 문제를 풀어야 해설을 볼 수 있어요</b></li>
       <li>💬 다 풀면 마지막에 <b>지나티처에게 카톡 결과 전송</b> 가능!</li>
     </ul>
@@ -591,6 +592,60 @@
       var btn = e.target.closest('button[data-submit]');
       if (btn) submitAnswer(parseInt(btn.getAttribute('data-submit')));
     });
+
+    // ⌨️ 키보드 제출: 주관식은 Enter로 제출, 객관식은 1~5 숫자키 선택 + Enter로 제출
+    main.addEventListener('keydown', function(e){
+      // 주관식: input 안에서 Enter
+      if (e.key === 'Enter' && e.target && e.target.classList && e.target.classList.contains('text-input')) {
+        e.preventDefault();
+        var idMatch = e.target.id.match(/^input(\d+)$/);
+        if (idMatch) submitAnswer(parseInt(idMatch[1]));
+        return;
+      }
+    });
+
+    // 객관식: 문서 전체에서 숫자키(1~5) → 현재 화면에 보이는 미답 문제 선지 선택 / Enter → 제출
+    document.addEventListener('keydown', function(e){
+      // input/textarea 안에서는 무시 (주관식 타이핑 중)
+      var tag = (e.target && e.target.tagName) || '';
+      if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+
+      var activeIdx = getCurrentProblemIdx();
+      if (activeIdx === -1) return;
+      var p = PROBLEMS[activeIdx];
+      if (!p || p.type !== 'mcq' || answers[activeIdx]) return;
+
+      // 1~5 숫자 키 → 보기 선택
+      if (e.key >= '1' && e.key <= '5') {
+        var oi = parseInt(e.key) - 1;
+        if (oi < p.options.length) {
+          selectOption(activeIdx, oi);
+          e.preventDefault();
+        }
+        return;
+      }
+      // Enter → 제출
+      if (e.key === 'Enter') {
+        if (document.querySelector('#opts' + activeIdx + ' label.selected')) {
+          submitAnswer(activeIdx);
+          e.preventDefault();
+        }
+      }
+    });
+  }
+
+  // 화면에 가장 많이 보이는 미답 문제의 인덱스를 반환
+  function getCurrentProblemIdx() {
+    var problems = document.querySelectorAll('.problem');
+    var best = -1, bestVisible = 0;
+    for (var i = 0; i < problems.length; i++) {
+      if (answers[i]) continue;
+      var rect = problems[i].getBoundingClientRect();
+      var vh = window.innerHeight;
+      var visible = Math.max(0, Math.min(rect.bottom, vh) - Math.max(rect.top, 0));
+      if (visible > bestVisible) { bestVisible = visible; best = i; }
+    }
+    return best;
   }
 
   function selectOption(pIdx, oIdx) {
@@ -716,54 +771,4 @@
       '',
       wrongList.length > 0 ? '🔍 다시 봐야 할 문제:\n' + wrongList.join('\n') : '🎉 모든 문제를 다 맞혔어요!',
       '',
-      '확인 부탁드려요~ 감사합니다! 💝'
-    ].join('\n');
-  }
-  function copyToClipboard(text) {
-    if (navigator.clipboard && window.isSecureContext) {
-      navigator.clipboard.writeText(text).catch(function(){ fallbackCopy(text); });
-    } else { fallbackCopy(text); }
-  }
-  function fallbackCopy(text) {
-    var ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed'; ta.style.opacity = '0';
-    document.body.appendChild(ta); ta.select();
-    try { document.execCommand('copy'); } catch(e){}
-    document.body.removeChild(ta);
-  }
-  function sendKakao() {
-    copyToClipboard(buildMessage());
-    showToast('메시지가 복사됐어요! 카톡을 열어서 붙여넣기 하세요 📋');
-    setTimeout(function(){
-      var isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
-      if (isMobile) window.location.href = 'kakaotalk://';
-      else window.open('https://accounts.kakao.com/login', '_blank');
-    }, 800);
-  }
-  function copyOnly() { copyToClipboard(buildMessage()); showToast('메시지가 복사됐어요! 📋'); }
-  function downloadResult() {
-    var blob = new Blob([buildMessage()], { type: 'text/plain;charset=utf-8' });
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = STUDENT_NAME + '_3단원_오답클리닉_결과.txt';
-    a.click();
-    showToast('결과 파일이 저장됐어요! 💾');
-  }
-  function showToast(msg) {
-    var t = $('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(function(){ t.classList.remove('show'); }, 2500);
-  }
-
-  $('startBtn').addEventListener('click', startQuiz);
-  $('kakaoBtn').addEventListener('click', sendKakao);
-  $('copyBtn').addEventListener('click', copyOnly);
-  $('downloadBtn').addEventListener('click', downloadResult);
-  console.log('✅ 클리닉 v2 로드 완료. 문제 수:', PROBLEMS.length);
-})();
-</script>
-</body>
-</html>
-                                                                                                                                                                                                                                                                                                
+  
