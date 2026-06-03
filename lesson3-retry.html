@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>이주연 학생 - 3단원 오답 다시풀기 🔄</title>
+<style>
+  :root {
+    --primary: #ff5c8a; --primary-dark: #e63977; --accent: #38c9b8;
+    --sun: #ffc845; --orange: #ff7a3d; --bg: #fff7e6; --card: #ffffff;
+    --text: #2b2b2b; --muted: #8a8a8a; --success: #4caf76;
+    --danger: #e85a5a; --warn: #ffb74d;
+    --shadow: 0 8px 24px rgba(255, 92, 138, 0.18);
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif; margin: 0;
+    background:
+      radial-gradient(circle at 12% 8%, rgba(56, 201, 184, 0.18) 0, transparent 35%),
+      radial-gradient(circle at 90% 20%, rgba(255, 200, 69, 0.22) 0, transparent 35%),
+      radial-gradient(circle at 85% 95%, rgba(255, 122, 61, 0.18) 0, transparent 40%),
+      radial-gradient(circle at 5% 90%, rgba(255, 92, 138, 0.15) 0, transparent 35%),
+      var(--bg);
+    color: var(--text); min-height: 100vh;
+  }
+  .container { max-width: 900px; margin: 0 auto; padding: 24px 18px 80px; }
+  header.hero { text-align: center; padding: 18px 16px 24px; }
+  header.hero h1 { font-size: 28px; margin: 0 0 6px; color: var(--primary-dark); }
+  header.hero .sub { color: var(--muted); font-size: 14px; }
+  header.hero .student {
+    margin-top: 14px; display: inline-block; background: white; border-radius: 999px;
+    padding: 6px 18px; box-shadow: var(--shadow); font-weight: 700; color: var(--primary-dark);
+  }
+  .progress-wrap {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(255, 247, 230, 0.94); backdrop-filter: blur(8px);
+    padding: 10px 4px 12px; margin-bottom: 18px; border-bottom: 1px solid #ffe1c2;
+  }
+  .progress-bar { height: 10px; background: #ffe1c2; border-radius: 999px; overflow: hidden; }
+  .progress-fill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--primary), var(--sun), var(--accent));
+    transition: width 0.4s ease;
+  }
+  .progress-text { display: flex; justify-content: space-between; margin-top: 6px; font-size: 13px; color: var(--muted); }
+  .problem {
+    background: var(--card); border-radius: 18px; padding: 22px 22px 18px;
+    margin-bottom: 18px; box-shadow: var(--shadow); border: 1px solid #ffe1c2;
+  }
+  .problem .meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+  .badge { background: var(--primary); color: white; border-radius: 999px; padding: 2px 10px; font-size: 12px; font-weight: 700; }
+  .badge.sub { background: var(--accent); }
+  .badge.gray { background: #e3e3e3; color: #555; }
+  .badge.orig { background: #fff0e0; color: var(--orange); border: 1px dashed var(--orange); }
+  .badge.psg { background: #f5e6ff; color: #8a4baf; border: 1px solid #d9b8f0; }
+  .problem h3 { margin: 4px 0 10px; font-size: 16px; color: #333; }
+  .passage {
+    background: #fffaf0; border: 1px solid #ffe1c2; border-radius: 12px;
+    padding: 14px 16px; font-size: 14.5px; line-height: 1.75; color: #333;
+    margin-bottom: 14px; white-space: pre-wrap;
+  }
+  .options { display: grid; gap: 8px; }
+  .options label {
+    display: flex; gap: 10px; background: #fffaf0; border: 1.5px solid #ffe1c2;
+    border-radius: 12px; padding: 10px 14px; cursor: pointer; font-size: 14.5px;
+  }
+  .options label:hover { background: #fff0e0; border-color: var(--primary); }
+  .options label.selected { background: #ffe0eb; border-color: var(--primary-dark); font-weight: 600; }
+  .options.locked label { cursor: not-allowed; }
+  .options label.correct { background: #e0f5e7; border-color: var(--success); }
+  .options label.wrong { background: #fde2e2; border-color: var(--danger); }
+  .text-input {
+    width: 100%; padding: 12px 14px; border: 1.5px solid #ffe1c2; border-radius: 12px;
+    font-size: 14.5px; font-family: inherit; background: #fffaf0;
+  }
+  .text-input:focus { outline: none; border-color: var(--primary-dark); background: white; }
+  .text-input.correct { border-color: var(--success); background: #e0f5e7; }
+  .text-input.wrong { border-color: var(--danger); background: #fde2e2; }
+  .hint { margin-top: 8px; font-size: 12.5px; color: var(--muted); }
+  .submit-row { display: flex; gap: 8px; margin-top: 12px; align-items: center; flex-wrap: wrap; }
+  .btn {
+    background: var(--primary); color: white; border: none; border-radius: 10px;
+    padding: 9px 18px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit;
+  }
+  .btn:hover { background: var(--primary-dark); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .result-tag { font-weight: 700; font-size: 13px; }
+  .result-tag.ok { color: var(--success); }
+  .result-tag.no { color: var(--danger); }
+  .explanation {
+    margin-top: 12px; padding: 12px 14px; background: #f5fbff;
+    border-left: 4px solid var(--accent); border-radius: 8px; font-size: 14px;
+    line-height: 1.65; color: #333;
+  }
+  .complete-card {
+    background: linear-gradient(135deg, #ffe0eb, #fff0d0, #d0f5ef);
+    border-radius: 22px; padding: 28px; text-align: center; margin-bottom: 20px; box-shadow: var(--shadow);
+  }
+  .complete-card h2 { margin: 0 0 8px; color: var(--primary-dark); font-size: 26px; }
+  .complete-card .score { font-size: 44px; font-weight: 800; color: var(--primary-dark); margin: 12px 0; }
+  .complete-card .stats { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; margin: 14px 0; }
+  .stat-pill {
+    background: white; border-radius: 999px; padding: 8px 16px; font-size: 14px;
+    font-weight: 600; color: #333; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .share-section { background: white; border-radius: 18px; padding: 22px; box-shadow: var(--shadow); text-align: center; }
+  .share-section h3 { margin: 0 0 8px; color: #333; }
+  .kakao-btn {
+    background: #fee500; color: #3c1e1e; border: none; border-radius: 12px;
+    padding: 14px 22px; font-size: 16px; font-weight: 800; cursor: pointer;
+    width: 100%; margin-top: 12px; box-shadow: 0 4px 12px rgba(254, 229, 0, 0.4);
+    font-family: inherit; display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  }
+  .kakao-btn:hover { background: #ffd900; }
+  .preview-box {
+    background: #f9f9f9; border-radius: 12px; padding: 14px; margin-top: 14px;
+    text-align: left; font-size: 13.5px; line-height: 1.7; color: #444;
+    white-space: pre-wrap; border: 1px dashed #ddd; max-height: 280px; overflow-y: auto;
+  }
+  .toast {
+    position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
+    background: #333; color: white; padding: 12px 22px; border-radius: 999px;
+    font-size: 14px; z-index: 1000; transition: transform 0.3s;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .start-screen { background: white; border-radius: 22px; padding: 36px 26px; box-shadow: var(--shadow); text-align: center; }
+  .start-screen h2 { color: var(--primary-dark); margin: 6px 0 12px; }
+  .start-screen ul {
+    text-align: left; line-height: 1.85; font-size: 14.5px; color: #444;
+    background: #fff7e6; border-radius: 12px; padding: 14px 22px; margin: 18px 0;
+  }
+  .start-btn {
+    background: var(--primary-dark); color: white; border: none; border-radius: 12px;
+    padding: 14px 32px; font-size: 16px; font-weight: 800; cursor: pointer;
+    font-family: inherit; box-shadow: 0 4px 12px rgba(230, 57, 119, 0.35);
+  }
+  .start-btn:hover { background: var(--primary); }
+  .hide { display: none !important; }
+  .retry-banner {
+    max-width: 460px; margin: 0 auto 14px; padding: 18px 22px;
+    background: linear-gradient(135deg, #ffe0eb, #d0f5ef);
+    border-radius: 18px; text-align: center; box-shadow: var(--shadow);
+  }
+  .retry-banner .big { font-size: 48px; }
+  .retry-banner .msg { color: var(--primary-dark); font-weight: 700; margin-top: 6px; }
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<div class="container">
+
+  <header class="hero">
+    <div class="retry-banner">
+      <div class="big">🔄</div>
+      <div class="msg">3단원 오답 다시풀기</div>
+    </div>
+    <h1>주연아, 한 번만 더! 💪</h1>
+    <div class="sub">동아 윤정미 · Lesson 3 What a Great Idea</div>
+    <div class="student">👧 이주연 학생 · 오답 7문제</div>
+  </header>
+
+  <section id="startScreen" class="start-screen">
+    <h2>이번엔 꼭 다 맞히자! ✨</h2>
+    <p style="color:#555; font-size:15px;">지난번에 틀린 <b style="color:var(--primary-dark)">7문제</b>만 다시 풀어요.<br/>객관식은 <b>선지 순서가 바뀌었어요</b>, 주관식은 그대로예요.</p>
+    <ul>
+      <li>📝 총 <b>7문제</b> (객관식 4 + 주관식 3)</li>
+      <li>🎲 객관식은 선지 위치가 바뀌어 있어요 — 답을 외우지 말고 본문으로 다시 풀기!</li>
+      <li>⌨️ <b>키보드</b>: 객관식 <b>1~5</b>, 주관식 답 입력 후 <b>Enter</b></li>
+      <li>🔒 7문제 다 풀어야 해설 공개</li>
+    </ul>
+    <button type="button" class="start-btn" id="startBtn">다시 풀기 시작 ✏️</button>
+  </section>
+
+  <div id="progressSection" class="progress-wrap hide">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-text">
+      <span id="progressLabel">0 / 7 문제 풀이 중</span>
+      <span id="progressPercent">0%</span>
+    </div>
+  </div>
+
+  <main id="quizMain" class="hide"></main>
+
+  <section id="completeSection" class="hide">
+    <div class="complete-card">
+      <h2>🎉 다시풀기 완료!</h2>
+      <p style="color:#555; margin:0;">이주연 학생, 끝까지 다시 풀었어요!</p>
+      <div class="score" id="finalScore">0 / 7</div>
+      <div class="stats">
+        <div class="stat-pill">✅ 정답 <span id="correctCount">0</span></div>
+        <div class="stat-pill">❌ 오답 <span id="wrongCount">0</span></div>
+        <div class="stat-pill">⏱ <span id="elapsedTime">0분</span></div>
+      </div>
+      <p style="color:#555; font-size:14px; margin-top:8px;">아래 결과를 확인하고 카톡으로 보내세요!</p>
+    </div>
+    <div class="share-section">
+      <h3>📱 지나티처에게 카톡으로 보내기</h3>
+      <p style="color:#666; font-size:14px; margin:6px 0 0;">아래 버튼을 누르면 결과 메시지가 복사돼요.<br/>카카오톡 열어서 지나티처 채팅창에 붙여넣기 하세요!</p>
+      <button type="button" class="kakao-btn" id="copyBtn">
+        <span style="font-size:20px;">💬</span> 카카오톡 메시지 복사하기
+      </button>
+      <div class="preview-box" id="messagePreview"></div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+(function(){
+  'use strict';
+  var STUDENT_NAME = "이주연";
+  var TEACHER_NAME = "지나티처";
+
+  // ===== 오답 7문제만 (객관식: 선지 순서 셔플 / 주관식: 그대로) =====
+  // answer 인덱스는 셔플된 새 선지 배열 기준으로 표기.
+  var PROBLEMS = [
+    // 원본 문제 7 (연결어 빈칸) — 원래 정답 ②(As a solution) → 셔플 후 ③
+    {
+      origin: "원본 문제 7 (연결어 빈칸)",
+      psg: "본문 B · 커피포트 웹캠",
+      type: "mcq",
+      skill: "연결어 빈칸",
+      passage: "Dr. Quentin Stafford-Fraser and Dr. Paul Jardetzky were working in a computer lab in England. There was only one coffee machine in the building. So they had to make many disappointing trips to the empty coffee pot. ___________, the two researchers set up a camera in front of the coffee machine.",
+      question: "빈칸에 들어갈 연결어로 가장 적절한 것은?",
+      options: [
+        "① However",
+        "② Finally",
+        "③ As a solution",
+        "④ For example",
+        "⑤ In contrast"
+      ],
+      answer: 2,
+      explain: "빈 커피포트로 가는 헛걸음을 줄이기 위한 '해결책으로서(As a solution)' 카메라를 설치한 것."
+    },
+    // 원본 문제 10 (어휘 빈칸) — 주관식, 그대로
+    {
+      origin: "원본 문제 10 (어휘 빈칸)",
+      psg: "본문 B · 커피포트 웹캠",
+      type: "short",
+      skill: "어휘 빈칸",
+      passage: "There was only one coffee machine in the building. So, they had to make many ___________ trips to the empty coffee pot.",
+      question: "빈칸에 들어갈 형용사를 본문에서 찾아 영어로 쓰시오. (뜻: 실망스러운)",
+      hint: "빈 커피포트를 보고 돌아오는 발걸음의 느낌. dis-로 시작",
+      acceptableAnswers: ["disappointing"],
+      explain: "정답: disappointing. 'disappointing trips' — 커피가 다 떨어진 걸 보고 실망스럽게 돌아온 발걸음."
+    },
+    // 원본 문제 11 (글의 요지) — 원래 정답 ③ → 셔플 후 ④
+    {
+      origin: "원본 문제 11 (글의 요지)",
+      psg: "본문 B · 커피포트 웹캠",
+      type: "mcq",
+      skill: "글의 요지",
+      passage: "The first webcam was invented to watch a coffee pot. In 1991, Dr. Quentin Stafford-Fraser and Dr. Paul Jardetzky were working in a computer lab in England. To work better, they needed lots of coffee. However, there was only one coffee machine in the building. So, they had to make many disappointing trips to the empty coffee pot. As a solution, the two researchers set up a camera in front of the coffee machine. The camera took pictures of the coffee pot three times a minute. With special software, all the researchers in the building could see the pictures on their local network. No more disappointing trips!",
+      question: "윗글의 요지로 가장 적절한 것은?",
+      options: [
+        "① 좋은 연구를 위해서는 충분한 휴식이 중요하다.",
+        "② 카메라는 보안용으로 발명되었다.",
+        "③ 영국 케임브리지는 컴퓨터 공학의 중심지이다.",
+        "④ 사소한 일상의 불편함도 위대한 발명의 출발점이 될 수 있다.",
+        "⑤ 커피는 연구자에게 꼭 필요한 음료이다."
+      ],
+      answer: 3,
+      explain: "커피포트를 자꾸 헛걸음하는 작은 불편함이 웹캠이라는 큰 발명을 낳았다는 흐름. 사소한 일상의 불편함에서 발명이 시작된다는 게 요지."
+    },
+    // 원본 문제 13 (글의 제목) — 원래 정답 ② → 셔플 후 ④
+    {
+      origin: "원본 문제 13 (글의 제목)",
+      psg: "본문 C · Bette Graham 수정액",
+      type: "mcq",
+      skill: "글의 제목",
+      passage: "Whiteout was invented by Bette Graham. In 1956, Graham was working at a bank in Texas, USA. At that time, people had to retype the whole page when they made even a small mistake. Graham was a bad typist, so she needed a solution. One day, Graham saw some window painters. When they made a mistake, they corrected it by simply painting over it. The next day, she made her own white paint and used it to correct her typing mistakes. Surprisingly, nobody noticed! Soon, everybody at the bank began using it.",
+      question: "윗글의 제목으로 가장 적절한 것은?",
+      options: [
+        "① Why Painters Are Important Artists",
+        "② The History of Modern Typewriters",
+        "③ How to Become a Good Bank Teller",
+        "④ How a Bad Typist Invented Whiteout",
+        "⑤ The Best Bank in Texas"
+      ],
+      answer: 3,
+      explain: "타자를 잘 못 치던(bad typist) Graham이 자기 실수를 가리기 위해 수정액을 만들었다는 내용 → '나쁜 타자수가 어떻게 수정액을 발명했는가'."
+    },
+    // 원본 문제 16 (본문 정보 찾기) — 주관식, 그대로
+    {
+      origin: "원본 문제 16 (본문 정보 찾기)",
+      psg: "본문 C · Bette Graham 수정액",
+      type: "short",
+      skill: "본문 정보 찾기",
+      passage: "Whiteout was invented by Bette Graham. In 1956, Graham was working at a bank in Texas, USA. At that time, people had to retype the whole page when they made even a small mistake. Graham was a bad typist, so she needed a solution. One day, Graham saw some window painters. When they made a mistake, they corrected it by simply painting over it. The next day, she made her own white paint and used it to correct her typing mistakes.",
+      question: "Bette Graham은 어디에서 수정액에 대한 아이디어를 얻었습니까? 영어로 답하시오. (3~5단어, 본문에 그대로 나옴)",
+      hint: "어느 날 거리에서 본 사람들 (스펠링 주의! pain__ers)",
+      acceptableAnswers: ["window painters", "from window painters", "the window painters"],
+      matchMode: "any-keyword",
+      explain: "정답: window painters (또는 from window painters). 본문 \"Graham saw some window painters. When they made a mistake, they corrected it by simply painting over it.\" — 창문에 페인트칠하는 사람들이 실수했을 때 그 위에 덧칠하는 모습을 보고 영감을 얻음."
+    },
+    // 원본 문제 17 (내용 일치 X) — 원래 정답 ③ → 셔플 후 ②
+    {
+      origin: "원본 문제 17 (내용 일치하지 않는 것)",
+      psg: "본문 C · Bette Graham 수정액",
+      type: "mcq",
+      skill: "내용 일치하지 않는 것",
+      passage: "Whiteout was invented by Bette Graham. In 1956, Graham was working at a bank in Texas, USA. At that time, people had to retype the whole page when they made even a small mistake. Graham was a bad typist, so she needed a solution. One day, Graham saw some window painters. When they made a mistake, they corrected it by simply painting over it. The next day, she made her own white paint and used it to correct her typing mistakes. Surprisingly, nobody noticed! Soon, everybody at the bank began using it.",
+      question: "윗글의 내용과 일치하지 않는 것은?",
+      options: [
+        "① Bette Graham worked at a bank in Texas.",
+        "② Graham was a very good typist.",
+        "③ At first, nobody noticed her white paint corrections.",
+        "④ Whiteout was invented in 1956.",
+        "⑤ Graham got the idea from window painters."
+      ],
+      answer: 1,
+      explain: "본문은 \"Graham was a BAD typist\"라고 명시 → ②번의 'a very good typist'는 일치하지 않음. 나쁜 타자수였기 때문에 수정액이 필요했음."
+    },
+    // 원본 문제 20 (대화 빈칸) — 주관식, 그대로
+    {
+      origin: "원본 문제 20 (대화 빈칸)",
+      psg: "혼합 · 일기예보 대화",
+      type: "short",
+      skill: "대화 빈칸 단어",
+      passage: "이주연: Tom, did you check the weather ___________ for tomorrow?\nTom: Yes. It says it's going to rain heavily.\n이주연: Really? It's quite sunny now.\nTom: Yeah, but the ___________ says it's going to rain on Monday too.",
+      question: "두 빈칸에 공통으로 들어갈 영어 단어를 쓰시오. (뜻: 일기예보)",
+      hint: "weather ___________ = 일기예보. f로 시작하는 단어",
+      acceptableAnswers: ["forecast"],
+      explain: "정답: forecast. 'weather forecast'는 일기예보. (50번 원본의 정답 선지 ⑤번과 동일 단어)"
+    }
+  ];
+
+  var answers = {};
+  var startTime = null;
+  function $(id){ return document.getElementById(id); }
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  function startQuiz() {
+    $('startScreen').classList.add('hide');
+    $('progressSection').classList.remove('hide');
+    $('quizMain').classList.remove('hide');
+    renderProblems();
+    startTime = Date.now();
+    updateProgress();
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  function renderProblems() {
+    var main = $('quizMain');
+    main.innerHTML = '';
+    PROBLEMS.forEach(function(p, idx){
+      var div = document.createElement('div');
+      div.className = 'problem'; div.id = 'p' + idx;
+      var typeLabel = p.type === 'mcq' ? '객관식' : '주관식';
+      var typeClass = p.type === 'mcq' ? 'badge' : 'badge sub';
+      var optionsHtml;
+      if (p.type === 'mcq') {
+        optionsHtml = '<div class="options" id="opts' + idx + '">' +
+          p.options.map(function(opt, oi){
+            return '<label data-i="' + oi + '" data-pi="' + idx + '"><span>' + escapeHtml(opt) + '</span></label>';
+          }).join('') + '</div>';
+      } else {
+        optionsHtml =
+          '<input type="text" class="text-input" id="input' + idx + '" placeholder="답을 입력하세요..." />' +
+          (p.hint ? '<div class="hint">💡 힌트: ' + escapeHtml(p.hint) + '</div>' : '');
+      }
+      div.innerHTML =
+        '<div class="meta">' +
+          '<span class="' + typeClass + '">문제 ' + (idx + 1) + ' · ' + typeLabel + '</span>' +
+          '<span class="badge orig">' + escapeHtml(p.origin) + '</span>' +
+          '<span class="badge psg">' + escapeHtml(p.psg) + '</span>' +
+          '<span class="badge gray">' + escapeHtml(p.skill) + '</span>' +
+        '</div>' +
+        '<h3>' + escapeHtml(p.question).replace(/\n/g,'<br/>') + '</h3>' +
+        '<div class="passage">' + escapeHtml(p.passage).replace(/\n/g, '<br/>') + '</div>' +
+        optionsHtml +
+        '<div class="submit-row">' +
+          '<button type="button" class="btn" data-submit="' + idx + '">제출</button>' +
+          '<span id="result' + idx + '"></span>' +
+        '</div>' +
+        '<div class="explanation hide" id="exp' + idx + '"></div>';
+      main.appendChild(div);
+    });
+
+    main.addEventListener('click', function(e){
+      var lbl = e.target.closest('.options label');
+      if (lbl) {
+        selectOption(parseInt(lbl.getAttribute('data-pi')), parseInt(lbl.getAttribute('data-i')));
+        return;
+      }
+      var btn = e.target.closest('button[data-submit]');
+      if (btn) submitAnswer(parseInt(btn.getAttribute('data-submit')));
+    });
+
+    main.addEventListener('keydown', function(e){
+      if (e.key === 'Enter' && e.target && e.target.classList && e.target.classList.contains('text-input')) {
+        e.preventDefault();
+        var idMatch = e.target.id.match(/^input(\d+)$/);
+        if (idMatch) submitAnswer(parseInt(idMatch[1]));
+      }
+    });
+
+    document.addEventListener('keydown', function(e){
+      var tag = (e.target && e.target.tagName) || '';
+      if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+      var activeIdx = getCurrentProblemIdx();
+      if (activeIdx === -1) return;
+      var p = PROBLEMS[activeIdx];
+      if (!p || p.type !== 'mcq' || answers[activeIdx]) return;
+      if (e.key >= '1' && e.key <= '5') {
+        var oi = parseInt(e.key) - 1;
+        if (oi < p.options.length) { selectOption(activeIdx, oi); e.preventDefault(); }
+        return;
+      }
+      if (e.key === 'Enter') {
+        if (document.querySelector('#opts' + activeIdx + ' label.selected')) {
+          submitAnswer(activeIdx); e.preventDefault();
+        }
+      }
+    });
+  }
+
+  function getCurrentProblemIdx() {
+    var problems = document.querySelectorAll('.problem');
+    var best = -1, bestVisible = 0;
+    for (var i = 0; i < problems.length; i++) {
+      if (answers[i]) continue;
+      var rect = problems[i].getBoundingClientRect();
+      var visible = Math.max(0, Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0));
+      if (visible > bestVisible) { bestVisible = visible; best = i; }
+    }
+    return best;
+  }
+
+  function selectOption(pIdx, oIdx) {
+    if (answers[pIdx]) return;
+    var opts = document.querySelectorAll('#opts' + pIdx + ' label');
+    opts.forEach(function(l){ l.classList.remove('selected'); });
+    opts[oIdx].classList.add('selected');
+  }
+
+  function submitAnswer(idx) {
+    var p = PROBLEMS[idx];
+    if (answers[idx]) return;
+    var selected, isCorrect;
+    if (p.type === 'mcq') {
+      var sel = document.querySelector('#opts' + idx + ' label.selected');
+      if (!sel) { showToast('선택지를 골라주세요!'); return; }
+      selected = parseInt(sel.getAttribute('data-i'));
+      isCorrect = selected === p.answer;
+      var opts = document.querySelectorAll('#opts' + idx + ' label');
+      opts.forEach(function(l, i){
+        l.classList.remove('selected');
+        if (i === p.answer) l.classList.add('correct');
+        else if (i === selected && !isCorrect) l.classList.add('wrong');
+      });
+      $('opts' + idx).classList.add('locked');
+    } else {
+      var inp = $('input' + idx);
+      selected = inp.value.trim();
+      if (!selected) { showToast('답을 입력해주세요!'); return; }
+      isCorrect = checkShortAnswer(p, selected);
+      inp.disabled = true;
+      inp.classList.add(isCorrect ? 'correct' : 'wrong');
+    }
+    answers[idx] = { selected: selected, isCorrect: isCorrect };
+    $('result' + idx).innerHTML = isCorrect
+      ? '<span class="result-tag ok">정답! 🎉</span>'
+      : '<span class="result-tag no">아쉬워요 😢 (해설은 모두 푼 뒤 공개)</span>';
+    var submitBtn = document.querySelector('button[data-submit="' + idx + '"]');
+    if (submitBtn) submitBtn.disabled = true;
+    updateProgress();
+    checkAllDone();
+  }
+
+  function normalize(s) {
+    return String(s).toLowerCase().replace(/[.?!,;:'"()\[\]]/g, '').trim();
+  }
+  function checkShortAnswer(p, ans) {
+    var a = normalize(ans);
+    if (p.matchMode === 'any-keyword') {
+      return p.acceptableAnswers.some(function(k){ return a.indexOf(normalize(k)) !== -1; });
+    }
+    return p.acceptableAnswers.some(function(k){
+      var kk = normalize(k);
+      return a === kk || a.indexOf(kk) !== -1;
+    });
+  }
+
+  function updateProgress() {
+    var done = Object.keys(answers).length;
+    var pct = Math.round(done / PROBLEMS.length * 100);
+    $('progressFill').style.width = pct + '%';
+    $('progressLabel').textContent = done + ' / ' + PROBLEMS.length + ' 문제 완료';
+    $('progressPercent').textContent = pct + '%';
+  }
+  function checkAllDone() {
+    if (Object.keys(answers).length === PROBLEMS.length) {
+      unlockExplanations(); showComplete();
+    }
+  }
+  function unlockExplanations() {
+    PROBLEMS.forEach(function(p, idx){
+      var exp = $('exp' + idx);
+      exp.classList.remove('hide');
+      var userAns = answers[idx];
+      var userAnsDisplay = p.type === 'mcq' ? p.options[userAns.selected] : '"' + userAns.selected + '"';
+      var correctDisplay = p.type === 'mcq'
+        ? p.options[p.answer]
+        : (p.acceptableAnswers[0] + (p.acceptableAnswers.length > 1 ? ' 등' : ''));
+      exp.innerHTML =
+        '<div><b>📌 정답:</b> ' + escapeHtml(correctDisplay) + '</div>' +
+        '<div><b>📝 내 답:</b> ' + escapeHtml(userAnsDisplay) + ' ' + (userAns.isCorrect ? '✅' : '❌') + '</div>' +
+        '<div style="margin-top:8px;"><b>💡 해설:</b> ' + escapeHtml(p.explain) + '</div>';
+    });
+  }
+  function showComplete() {
+    var correct = 0;
+    Object.keys(answers).forEach(function(k){ if (answers[k].isCorrect) correct++; });
+    var wrong = PROBLEMS.length - correct;
+    $('finalScore').textContent = correct + ' / ' + PROBLEMS.length;
+    $('correctCount').textContent = correct;
+    $('wrongCount').textContent = wrong;
+    var minutes = Math.max(1, Math.round((Date.now() - startTime) / 60000));
+    $('elapsedTime').textContent = minutes + '분';
+    $('completeSection').classList.remove('hide');
+    $('messagePreview').textContent = buildMessage();
+    setTimeout(function(){ $('completeSection').scrollIntoView({behavior:'smooth'}); }, 300);
+  }
+  function buildMessage() {
+    var correct = 0;
+    Object.keys(answers).forEach(function(k){ if (answers[k].isCorrect) correct++; });
+    var wrong = PROBLEMS.length - correct;
+    var minutes = Math.max(1, Math.round((Date.now() - startTime) / 60000));
+    var rate = Math.round(correct / PROBLEMS.length * 100);
+
+    var encourage;
+    if (rate === 100) encourage = '와! ' + STUDENT_NAME + ' 학생, 지난번 오답을 전부 다 맞혔어요!! 정말 대단해요 🌟';
+    else if (rate >= 70) encourage = STUDENT_NAME + ' 학생, 정말 잘했어요! 거의 다 맞혔네요 👍';
+    else if (rate >= 50) encourage = STUDENT_NAME + ' 학생, 한 번 더 푼 게 멋져요! 조금만 더 보면 완벽해요 💪';
+    else encourage = STUDENT_NAME + ' 학생, 다시 도전한 것 자체가 멋져요! 같이 차근차근 봐요 🌱';
+
+    var wrongBlocks = [];
+    PROBLEMS.forEach(function(p, i){
+      if (answers[i] && !answers[i].isCorrect) {
+        var ua = answers[i].selected;
+        var myAns = p.type === 'mcq' ? p.options[ua] : '"' + ua + '"';
+        var correctAns = p.type === 'mcq' ? p.options[p.answer] : p.acceptableAnswers[0];
+        wrongBlocks.push(
+          '━━━━━━━━━━━━━━━\n' +
+          '❌ 문제 ' + (i+1) + ' [' + p.psg + ']\n' +
+          '   유형: ' + p.skill + '\n' +
+          '   ❓ ' + p.question.split('\n')[0] + '\n' +
+          '   📝 ' + STUDENT_NAME + ' 답: ' + myAns + '\n' +
+          '   ✅ 정답: ' + correctAns + '\n' +
+          '   💡 해설: ' + p.explain + '\n' +
+          '   👉 다음엔 꼭 맞힐 수 있어요!'
+        );
+      }
+    });
+
+    var lines = [
+      '안녕하세요 ' + TEACHER_NAME + '님! 🌸',
+      '',
+      '🔄 ' + STUDENT_NAME + ' 학생 3단원 오답 다시풀기 완료!',
+      encourage,
+      '',
+      '📚 동아 윤정미 · Lesson 3 (오답 7문제 재시도)',
+      '📝 총 ' + PROBLEMS.length + '문제 / ✅ ' + correct + '정답 / ❌ ' + wrong + '오답',
+      '⏱ 풀이 시간: ' + minutes + '분',
+      '📊 정답률: ' + rate + '%',
+      ''
+    ];
+
+    if (wrongBlocks.length > 0) {
+      lines.push('🔍 아직 헷갈리는 ' + wrongBlocks.length + '개와 친절 해설입니다:');
+      lines.push('');
+      lines = lines.concat(wrongBlocks);
+      lines.push('━━━━━━━━━━━━━━━');
+    } else {
+      lines.push('🎉🎉 지난번 오답을 전부 다 맞혔어요!! 🎉🎉');
+      lines.push(STUDENT_NAME + ' 학생 정말 자랑스러워요 ✨');
+    }
+
+    lines.push('');
+    lines.push('수고했어~~ ㅎㅎㅎ');
+    return lines.join('\n');
+  }
+
+  function copyToClipboard(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).catch(function(){ fallbackCopy(text); });
+    } else { fallbackCopy(text); }
+  }
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); } catch(e){}
+    document.body.removeChild(ta);
+  }
+  function copyMessage() {
+    copyToClipboard(buildMessage());
+    showToast('메시지가 복사됐어요! 카톡 열어서 붙여넣기 하세요 📋');
+  }
+  function showToast(msg) {
+    var t = $('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function(){ t.classList.remove('show'); }, 2500);
+  }
+
+  $('startBtn').addEventListener('click', startQuiz);
+  $('copyBtn').addEventListener('click', copyMessage);
+  console.log('✅ 다시풀기 클리닉 로드 완료. 문제 수:', PROBLEMS.length);
+})();
+</script>
+</body>
+</html>
