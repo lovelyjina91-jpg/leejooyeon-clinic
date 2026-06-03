@@ -750,26 +750,19 @@
     Object.keys(answers).forEach(function(k){ if (answers[k].isCorrect) correct++; });
     var wrong = PROBLEMS.length - correct;
     var minutes = Math.max(1, Math.round((Date.now() - startTime) / 60000));
-    var wrongList = [];
+
+    // 친절한 격려 메시지 (점수대별)
+    var rate = Math.round(correct / PROBLEMS.length * 100);
+    var encourage;
+    if (rate === 100) encourage = '와! ' + STUDENT_NAME + ' 학생, 전부 다 맞혔어요!! 정말 대단해요 🌟';
+    else if (rate >= 80) encourage = STUDENT_NAME + ' 학생, 정말 잘했어요! 거의 다 맞혔네요 👍';
+    else if (rate >= 60) encourage = STUDENT_NAME + ' 학생, 잘 풀었어요! 몇 개만 더 보면 완벽해요 💪';
+    else if (rate >= 40) encourage = STUDENT_NAME + ' 학생, 끝까지 푼 게 정말 멋져요! 오답 같이 보면 금방 늘어요 🌱';
+    else encourage = STUDENT_NAME + ' 학생, 어려운 단원 끝까지 푼 것만으로도 박수! 같이 차근차근 봐요 🤗';
+
+    // 오답 친절 해설
+    var wrongBlocks = [];
     PROBLEMS.forEach(function(p, i){
       if (answers[i] && !answers[i].isCorrect) {
-        wrongList.push('  · 문제 ' + (i+1) + ' (' + p.psg + ' / ' + p.skill + ')');
-      }
-    });
-    return [
-      '안녕하세요 ' + TEACHER_NAME + '님! 🌸',
-      STUDENT_NAME + ' 학생 3단원 오답 클리닉 완료했어요.',
-      '',
-      '📚 동아 윤정미 · Lesson 3 What a Great Idea',
-      '📝 총 ' + PROBLEMS.length + '문제 / ✅ ' + correct + ' 정답 / ❌ ' + wrong + ' 오답',
-      '⏱ 풀이 시간: ' + minutes + '분',
-      '📊 정답률: ' + Math.round(correct / PROBLEMS.length * 100) + '%',
-      '',
-      wrongList.length > 0 ? '🔍 다시 봐야 할 문제:\n' + wrongList.join('\n') : '🎉 모든 문제를 다 맞혔어요!',
-      '',
-      '확인 부탁드려요~ 감사합니다! 💝'
-    ].join('\n');
-  }
-  function copyToClipboard(text) {
-    if (navigator.clipboard && window.isSecureContext) {
-      navigator.clipboard.writeText(te
+        var ua = answers[i].selected;
+        var myAns = p.type === 'mcq' ? p.options[ua] : '"' + ua + '"'
