@@ -40,7 +40,7 @@
     box-shadow: 0 10px 30px rgba(255, 92, 138, 0.22); transform: rotate(-1deg);
   }
   .hero-banner img { width: 100%; display: block; }
-  header.hero h1 { font-size: 28px; margin: 0 0 6px; color: var(--primary-dark); letter-spacing: -0.5px; }
+  header.hero h1 { font-size: 28px; margin: 0 0 6px; color: var(--primary-dark); }
   header.hero .sub { color: var(--muted); font-size: 14px; }
   header.hero .student {
     margin-top: 14px; display: inline-block; background: white; border-radius: 999px;
@@ -67,6 +67,7 @@
   .badge.sub { background: var(--accent); }
   .badge.gray { background: #e3e3e3; color: #555; }
   .badge.orig { background: #fff0e0; color: var(--orange); border: 1px dashed var(--orange); }
+  .badge.psg { background: #f5e6ff; color: #8a4baf; border: 1px solid #d9b8f0; }
   .problem h3 { margin: 4px 0 10px; font-size: 16px; color: #333; }
   .passage {
     background: #fffaf0; border: 1px solid #ffe1c2; border-radius: 12px;
@@ -75,9 +76,8 @@
   }
   .options { display: grid; gap: 8px; }
   .options label {
-    display: flex; align-items: flex-start; gap: 10px;
-    background: #fffaf0; border: 1.5px solid #ffe1c2; border-radius: 12px;
-    padding: 10px 14px; cursor: pointer; font-size: 14.5px; transition: all 0.15s;
+    display: flex; gap: 10px; background: #fffaf0; border: 1.5px solid #ffe1c2;
+    border-radius: 12px; padding: 10px 14px; cursor: pointer; font-size: 14.5px;
   }
   .options label:hover { background: #fff0e0; border-color: var(--primary); }
   .options label.selected { background: #ffe0eb; border-color: var(--primary-dark); font-weight: 600; }
@@ -141,9 +141,7 @@
     box-shadow: 0 8px 24px rgba(0,0,0,0.25);
   }
   .toast.show { transform: translateX(-50%) translateY(0); }
-  .start-screen {
-    background: white; border-radius: 22px; padding: 36px 26px; box-shadow: var(--shadow); text-align: center;
-  }
+  .start-screen { background: white; border-radius: 22px; padding: 36px 26px; box-shadow: var(--shadow); text-align: center; }
   .start-screen h2 { color: var(--primary-dark); margin: 6px 0 12px; }
   .start-screen ul {
     text-align: left; line-height: 1.85; font-size: 14.5px; color: #444;
@@ -173,12 +171,12 @@
 
   <section id="startScreen" class="start-screen">
     <h2>안녕, 이주연 학생! 👋</h2>
-    <p style="color:#555; font-size:15px;">3단원 26~50번 중에서 틀린 문제들을 분석해서<br/><b style="color:var(--primary-dark)">유사 문제 20개</b>를 만들었어요.</p>
+    <p style="color:#555; font-size:15px;">3단원 본문 <b style="color:var(--primary-dark)">3개(탐보라 화산-자전거 / 커피포트 웹캠 / 수정액 발명)</b>의<br/>틀린 문제들에서 같은 본문으로 만든 <b>변형 문제 20개</b>를 풀어요.</p>
     <ul>
       <li>📝 총 <b>20문제</b> (객관식 10 + 주관식 10)</li>
+      <li>📖 본문은 교과서 원문 그대로, 빈칸·질문·선지만 다르게 변형</li>
       <li>🔒 <b>모든 문제를 풀어야 해설을 볼 수 있어요</b></li>
-      <li>💬 다 풀면 마지막에 <b>지나티처에게 카톡으로 보내기</b> 가능!</li>
-      <li>⏰ 차근차근 풀어보자. 화이팅!</li>
+      <li>💬 다 풀면 마지막에 <b>지나티처에게 카톡 결과 전송</b> 가능!</li>
     </ul>
     <button type="button" class="start-btn" id="startBtn">시작하기 ✏️</button>
   </section>
@@ -205,10 +203,9 @@
       </div>
       <p style="color:#555; font-size:14px; margin-top:8px;">아래에서 해설을 확인하고, 카톡으로 결과를 지나티처에게 보내세요!</p>
     </div>
-
     <div class="share-section">
       <h3>📱 지나티처에게 카톡으로 보내기</h3>
-      <p style="color:#666; font-size:14px; margin:6px 0 0;">결과 메시지가 클립보드에 복사돼요. 카카오톡 열어서 붙여넣기 하면 됩니다!</p>
+      <p style="color:#666; font-size:14px; margin:6px 0 0;">결과 메시지가 클립보드에 복사돼요.</p>
       <button type="button" class="kakao-btn" id="kakaoBtn">
         <span style="font-size:20px;">💬</span> 카톡 메시지 복사 + 카톡 열기
       </button>
@@ -228,223 +225,310 @@
   var STUDENT_NAME = "이주연";
   var TEACHER_NAME = "지나티처";
 
+  // ===== 본문 (교과서 원문) =====
+  var P_TAMBORA = "Mt. Tambora, a volcano in Indonesia, exploded in 1815. The explosion created a huge cloud of ash, so crops failed around the world. As a result, people didn't have enough food to eat. Surprisingly, this made traveling difficult. Why? In those days, people rode horses, but many horses were killed for food. People needed a new way to travel, and Karl von Drais invented the first bicycle in Germany in 1817. Drais's bicycle had two wooden wheels but no pedals. How did it move without pedals? Well, riders simply pushed the bicycle forward with their feet. The present-day bicycle is the result of many inventors' work in the 19th century.";
+
+  var P_COFFEE = "The first webcam was invented to watch a coffee pot. In 1991, Dr. Quentin Stafford-Fraser and Dr. Paul Jardetzky were working in a computer lab in England. To work better, they needed lots of coffee. However, there was only one coffee machine in the building. So, they had to make many disappointing trips to the empty coffee pot. As a solution, the two researchers set up a camera in front of the coffee machine. The camera took pictures of the coffee pot three times a minute. With special software, all the researchers in the building could see the pictures on their local network. No more disappointing trips!";
+
+  var P_GRAHAM = "Whiteout was invented by Bette Graham. In 1956, Graham was working at a bank in Texas, USA. At that time, people had to retype the whole page when they made even a small mistake. Graham was a bad typist, so she needed a solution. One day, Graham saw some window painters. When they made a mistake, they corrected it by simply painting over it. The next day, she made her own white paint and used it to correct her typing mistakes. Surprisingly, nobody noticed! Soon, everybody at the bank began using it.";
+
   var PROBLEMS = [
+    // ============ PASSAGE A: TAMBORA → BICYCLE ============
     {
-      origin: "원본 30번 (제목 찾기) 변형",
+      origin: "원본 30번 (제목)",
+      psg: "본문 A · Tambora/자전거",
       type: "mcq",
       skill: "글의 제목",
-      passage: "On Saturdays, you can join a free workshop at the city library. Various experts give short lectures on cooking, photography, painting, and music. Each session lasts only 30 minutes, so you can try several activities in one day. Many families come together. The workshops are popular because they are useful and fun.",
+      passage: P_TAMBORA,
       question: "윗글의 제목으로 가장 적절한 것은?",
-      options: ["① The History of the City Library","② Saturday Workshops for Everyone","③ How to Become a Cooking Expert","④ Why Music Lessons Are Important","⑤ Family Time at Home"],
+      options: [
+        "① The Most Famous Volcano in Indonesia",
+        "② How a Volcano Led to the Birth of the Bicycle",
+        "③ The Best Inventions of the 19th Century",
+        "④ How to Take Care of Horses in Germany",
+        "⑤ Karl von Drais's Childhood Stories"
+      ],
       answer: 1,
-      explain: "도서관에서 다양한 짧은 강의를 누구나 들을 수 있다는 내용이므로 ②번 '모두를 위한 토요 워크숍'이 제목으로 가장 적절."
+      explain: "화산 폭발(1815) → 흉작 → 식량 부족 → 말이 식용으로 사용됨 → 새 이동수단 필요 → 1817년 자전거 발명. 이 흐름을 가장 잘 보여주는 ②번이 정답."
     },
     {
-      origin: "원본 30번 (제목 찾기) 변형",
+      origin: "원본 36번 (빈칸)",
+      psg: "본문 A · Tambora/자전거",
       type: "short",
-      skill: "글의 제목 (서술)",
-      passage: "Every Sunday morning, our community center holds a free coding class. People of all ages, from elementary students to grandparents, can join. The teachers are college student volunteers. Many people who once feared computers now build their own websites.",
-      question: "윗글의 제목을 영어로 4~8단어로 자유롭게 쓰시오.",
-      hint: "Free / Sunday / Coding / Class / Everyone 등의 단어 활용",
-      acceptableAnswers: ["free sunday coding class","coding class for everyone","free coding class","sunday coding class"],
-      matchMode: "any-keyword",
-      explain: "예시 답안: 'Free Sunday Coding Class for Everyone'. 핵심은 'free', 'coding', 'everyone(전 연령)'의 의미가 들어가야 함."
+      skill: "빈칸 단어 (본문 그대로)",
+      passage: "In those days, people rode horses, but many horses were killed for ___________. People needed a new way to travel.",
+      question: "본문에 따라 빈칸에 들어갈 영어 단어 한 개를 쓰시오.",
+      hint: "흉작으로 사람들이 굶주려서 말까지 먹게 됨",
+      acceptableAnswers: ["food"],
+      explain: "정답: food. 'many horses were killed for food' — 흉작으로 식량이 부족해 말까지 식용으로 잡았기 때문."
     },
     {
-      origin: "원본 32번 (빈칸 추론) 변형",
-      type: "mcq",
-      skill: "빈칸 추론",
-      passage: "At a small bookstore, customers often asked for books that were sold out. The owner, Ms. Lee, did not want them to leave disappointed. She wrote down every request and contacted publishers to find each book. Soon, her shop became known as the place where ___________ was always solved.",
-      question: "빈칸에 들어갈 말로 가장 적절한 것은?",
-      options: ["① the highest price","② a customer's problem","③ a new design","④ an old rule","⑤ a quick game"],
-      answer: 1,
-      explain: "손님이 원하는 책을 끝까지 찾아준다는 내용이므로 '손님의 문제(a customer's problem)'가 정답."
-    },
-    {
-      origin: "원본 32번 (빈칸 추론) 변형",
-      type: "short",
-      skill: "빈칸에 알맞은 단어",
-      passage: STUDENT_NAME + " attended a school where the printer broke every week. Other students just gave up, but " + STUDENT_NAME + " watched videos and learned how to fix it. After two months, the printer worked perfectly. The teachers were amazed at " + STUDENT_NAME + "'s ___________ to repair the machine.",
-      question: "빈칸에 들어갈 가장 적절한 영어 한 단어를 쓰시오.",
-      hint: "뜻: '능력' / 첫 글자 a",
-      acceptableAnswers: ["ability"],
-      explain: "정답: ability (능력). 'someone's ability to do something' 형태로 자주 쓰임."
-    },
-    {
-      origin: "원본 34번 (대화 흐름) 변형",
-      type: "mcq",
-      skill: "대화 흐름상 어색한 것",
-      passage: "A: I heard you joined the school band.\nB: Yes! I'm learning to play the drums.\nA: Wow, " + STUDENT_NAME + "! That's so cool.\n\nA의 다음 말로 어색한 것을 고르시오.",
-      question: "대화의 흐름상 가장 어색한 것은?",
-      options: ["① That sounds exciting.","② How long have you been practicing?","③ You must be busy these days.","④ I didn't know you could play the piano.","⑤ Is your drum teacher kind?"],
-      answer: 3,
-      explain: "B가 드럼(drums)을 배운다고 했는데 ④는 피아노(piano)를 언급해 흐름상 어색함."
-    },
-    {
-      origin: "원본 34번 (대화 흐름) 변형",
-      type: "short",
-      skill: "대화 빈칸 (의문문)",
-      passage: "Tina: Did you finish your homework, " + STUDENT_NAME + "?\n" + STUDENT_NAME + ": Yes, I did it last night.\nTina: That's great. By the way, ____________________?\n" + STUDENT_NAME + ": My favorite subject is science.",
-      question: "빈칸에 들어갈 알맞은 의문문을 영어로 쓰시오.",
-      hint: "대답이 'My favorite subject is science'이므로...",
-      acceptableAnswers: ["what is your favorite subject","what's your favorite subject","what subject do you like the most","what subject do you like most"],
-      matchMode: "any-keyword",
-      explain: "예시 답안: What is your favorite subject? / What's your favorite subject?"
-    },
-    {
-      origin: "원본 36번 (빈칸 추론) 변형",
-      type: "mcq",
-      skill: "빈칸 추론 (명사)",
-      passage: "After the heavy snowstorm, the small village was cut off for two weeks. The roads were blocked, and the trucks could not bring supplies. The villagers had to share what little they had. Soon, many of them ran out of ___________ and felt very hungry.",
-      question: "빈칸에 들어갈 말로 가장 적절한 것은?",
-      options: ["① water","② food","③ snow","④ time","⑤ space"],
-      answer: 1,
-      explain: "트럭이 보급품을 가져올 수 없고 '배가 매우 고팠다(felt very hungry)'에서 ②food."
-    },
-    {
-      origin: "원본 36번 (빈칸 추론) 변형",
-      type: "short",
-      skill: "빈칸에 알맞은 단어",
-      passage: "During a long drought, the farmers in " + STUDENT_NAME + "'s town could not grow vegetables. The wells became empty. Children carried small buckets to a nearby river just to get a little ___________ for cooking and drinking.",
-      question: "빈칸에 들어갈 가장 적절한 영어 한 단어를 쓰시오.",
-      hint: "가뭄(drought)으로 우물이 마름. 뜻: '물'",
-      acceptableAnswers: ["water"],
-      explain: "정답: water. 가뭄·우물이 비었다는 단서에서 추론."
-    },
-    {
-      origin: "원본 40번 (한 문장 요약) 변형",
-      type: "mcq",
-      skill: "글 요약 (A)(B)",
-      passage: "When a big flood hit the small town, ambulances could not reach sick people because the streets were under water. Some kind teachers used their own canoes to carry the patients to the hospital. Their action saved many lives.\n\n▶ 한 문장 요약: Teachers used (A) _______ to help patients when (B) _______ could not move through the flooded streets.",
-      question: "(A)와 (B)에 들어갈 말로 가장 적절한 것은?",
-      options: ["① (A) canoes  (B) ambulances","② (A) buses  (B) bicycles","③ (A) cars  (B) trains","④ (A) canoes  (B) airplanes","⑤ (A) trains  (B) cars"],
-      answer: 0,
-      explain: "구급차(ambulances)가 못 가니까 카누(canoes)로 환자를 옮겼다는 내용 → ①번."
-    },
-    {
-      origin: "원본 40번 (한 문장 요약) 변형",
-      type: "short",
-      skill: "글 요약 (한글 또는 영어)",
-      passage: "During a big snowstorm, the school bus could not run, so " + STUDENT_NAME + "'s father took the students to school on his own snowmobile. Thanks to him, no one missed the math test.",
-      question: "윗글의 내용을 한 문장으로 요약하시오. (한글 또는 영어 모두 가능)",
-      hint: "누가(이주연 아빠) 무엇을(스노모빌로 학생들을 학교까지)",
-      acceptableAnswers: ["이주연","스노모빌","snowmobile","father","아빠","아버지"],
-      matchMode: "any-keyword",
-      explain: "예시: '이주연의 아버지가 눈보라 때 자신의 스노모빌로 학생들을 학교에 데려다 주었다.'"
-    },
-    {
-      origin: "원본 44번 (빈칸 추론) 변형",
-      type: "mcq",
-      skill: "빈칸 추론 (명사)",
-      passage: "Ms. Park teaches science in a mountain village in Korea. There are only ten students, and the school has no laboratory. To help the children do experiments, she travels two hours every weekend to borrow equipment from a city school. The villagers say her _____________ has changed the village.",
-      question: "빈칸에 들어갈 말로 가장 적절한 것은?",
-      options: ["① fear","② laziness","③ effort","④ silence","⑤ anger"],
-      answer: 2,
-      explain: "주말마다 2시간씩 이동해서 장비를 빌려오는 헌신적인 행동 → '노력(effort)'."
-    },
-    {
-      origin: "원본 44번 (빈칸 추론) 변형",
-      type: "short",
-      skill: "빈칸에 알맞은 단어",
-      passage: "On the small island where " + STUDENT_NAME + " visited last summer, the only teacher used solar panels to power one old laptop. The students lined up every morning to take turns. The teacher said, \"Without ____________, our students would never learn about the digital world.\"",
-      question: "빈칸에 들어갈 가장 적절한 영어 단어를 쓰시오.",
-      hint: "태양광 패널로 작동시키는 것 / 뜻: '전기, 전력'",
-      acceptableAnswers: ["electricity","power"],
-      matchMode: "any-keyword",
-      explain: "정답: electricity (또는 power). 태양광 패널의 목적은 전기를 공급하는 것."
-    },
-    {
-      origin: "원본 45번 (빈칸 A·B) 변형",
-      type: "mcq",
-      skill: "빈칸 (A)(B) 동시 추론",
-      passage: "A small museum had only one expert who could explain ancient paintings, but many visitors came every day. The museum staff (A) ___________ a solution. They decided to (B) ___________ the expert's voice and play it through small speakers near each painting.",
-      question: "(A)와 (B)에 들어갈 말로 가장 적절한 것은?",
-      options: ["① (A) needed  (B) record","② (A) refused  (B) cancel","③ (A) hated  (B) ignore","④ (A) needed  (B) stop","⑤ (A) refused  (B) record"],
-      answer: 0,
-      explain: "해결책이 '필요했고(needed)' 설명을 '녹음(record)'해서 스피커로 틀었다는 흐름."
-    },
-    {
-      origin: "원본 45번 (빈칸 A·B) 변형",
-      type: "short",
-      skill: "빈칸 (A)(B) 단어 쓰기",
-      passage: STUDENT_NAME + " wanted everyone in her class to enjoy storytime, but some students could not hear well. So she came up with a (A) _______: she would speak through a microphone, and at the same time her friend would (B) _______ the story on the screen with sign language.",
-      question: "(A)와 (B)에 들어갈 가장 적절한 영어 단어를 각각 쓰시오. (예: solution / show)",
-      hint: "(A) 뜻: '해결책' / (B) 뜻: '보여주다, 표현하다'",
-      acceptableAnswers: ["solution","idea","plan"],
-      requireKeywords: ["solution|idea|plan","show|display|sign|express"],
-      matchMode: "all-keywords",
-      explain: "예시: (A) solution (B) show. (A)에는 해결책/아이디어, (B)에는 보여주다/표현하다 의미의 단어가 적절."
-    },
-    {
-      origin: "원본 47번 (순서 배열) 변형",
-      type: "mcq",
-      skill: "글의 순서",
-      passage: "Mary lived in a small village where every kid wanted to read more books, but the village had no library.\n\n(A) She used a small wagon to carry the books from house to house. Soon, the children called her \"the book lady.\"\n(B) So she asked her friends in the city to send their old books.\n(C) Within a month, more than three hundred books arrived at her door.",
-      question: "글의 순서로 가장 적절한 것은?",
-      options: ["① (A)-(B)-(C)","② (B)-(A)-(C)","③ (B)-(C)-(A)","④ (C)-(A)-(B)","⑤ (C)-(B)-(A)"],
-      answer: 2,
-      explain: "도서관이 없음 → (B) 친구들에게 책 요청 → (C) 한 달 안에 책 도착 → (A) 그 책을 수레로 배달 → ③번."
-    },
-    {
-      origin: "원본 47번 (순서 배열) 변형",
-      type: "short",
-      skill: "글의 순서 (알파벳 답)",
-      passage: STUDENT_NAME + " noticed that her grandmother could not read small letters anymore.\n\n(A) Her grandmother could finally read her favorite novels again.\n(B) " + STUDENT_NAME + " saved her allowance for two months.\n(C) She bought a special magnifying glass and gave it to her grandmother.",
-      question: "글의 순서를 알파벳으로 나열하시오. (예: A-B-C)",
-      hint: "원인 → 행동 → 결과의 흐름",
-      acceptableAnswers: ["b-c-a","bca","b c a","(b)-(c)-(a)","bca"],
-      matchMode: "any-keyword",
-      explain: "(B) 두 달 동안 용돈을 모음 → (C) 돋보기를 사서 드림 → (A) 할머니가 다시 소설을 읽음. 정답: B-C-A"
-    },
-    {
-      origin: "원본 49번 (내용 일치 X) 변형",
+      origin: "원본 49번 (일치하지 않는 것)",
+      psg: "본문 A · Tambora/자전거",
       type: "mcq",
       skill: "내용 일치하지 않는 것",
-      passage: "Mount Vesuvius is a volcano in Italy. It erupted in AD 79, covering the city of Pompeii with hot ash. Many people died because they could not escape in time. Today, the buried city of Pompeii is a famous archaeological site, and scientists still study the volcano carefully.",
+      passage: P_TAMBORA,
       question: "윗글의 내용과 일치하지 않는 것은?",
-      options: ["① Mount Vesuvius is in Italy.","② It erupted in AD 79.","③ Many people died in the eruption.","④ Pompeii was completely rebuilt as a modern city.","⑤ Scientists still study the volcano today."],
-      answer: 3,
-      explain: "본문은 폼페이가 '묻혔고(buried)' 유적지(archaeological site)가 되었다고 했으므로 ④번 '완전히 재건되었다'는 일치하지 않음."
+      options: [
+        "① Mt. Tambora is in Indonesia.",
+        "② The volcano exploded in 1815.",
+        "③ Many horses were killed because they got sick.",
+        "④ Karl von Drais invented the first bicycle in 1817.",
+        "⑤ The first bicycle had wooden wheels but no pedals."
+      ],
+      answer: 2,
+      explain: "③번 오답: 말은 '병에 걸려서(got sick)' 죽은 것이 아니라 본문대로 '식량으로(for food)' 잡혔음."
     },
     {
-      origin: "원본 49번 (내용 일치 X) 변형",
+      origin: "원본 42번 (어휘)",
+      psg: "본문 A · Tambora/자전거",
       type: "short",
-      skill: "틀린 문장 고쳐쓰기",
-      passage: "The Great Wall of China was built mostly during the Ming Dynasty. It was made to protect the country from northern invaders. Today, parts of it are damaged, but it is still one of the most visited places in the world.",
-      question: "다음 문장은 본문과 일치하지 않습니다. 틀린 부분을 바르게 고쳐 쓰시오.\n\n❌ \"The Great Wall was built to protect China from southern invaders.\"",
-      hint: "southern을 어떻게 바꿔야 할까?",
-      acceptableAnswers: ["northern"],
+      skill: "공통 단어 빈칸",
+      passage: "Drais's bicycle had two wooden wheels but no ___________. How did it move without ___________? Well, riders simply pushed the bicycle forward with their feet.",
+      question: "두 빈칸에 공통으로 들어갈 영어 단어를 쓰시오.",
+      hint: "발로 밀어서 움직였다는 것은 ___이/가 없었기 때문",
+      acceptableAnswers: ["pedals", "pedal"],
       matchMode: "any-keyword",
-      explain: "정답: northern. 'The Great Wall was built to protect China from northern invaders.' (southern → northern)"
+      explain: "정답: pedals. Drais의 자전거는 페달이 없어서 발로 땅을 밀어 움직였음."
     },
     {
-      origin: "원본 50번 (대화 빈칸) 변형",
+      origin: "원본 47번 (순서/흐름)",
+      psg: "본문 A · Tambora/자전거",
       type: "mcq",
-      skill: "대화 빈칸",
-      passage: "A: What's the ____________ like this weekend?\nB: It will be very rainy on Saturday but sunny on Sunday.\nA: Then let's go to the beach on Sunday.",
-      question: "빈칸에 들어갈 말로 가장 적절한 것은?",
-      options: ["① weather","② homework","③ traffic","④ news","⑤ price"],
-      answer: 0,
-      explain: "비/맑음 등의 답이 나오므로 'weather(날씨)'가 정답. 'What's the weather like ~?'는 '~의 날씨는 어때?'."
+      skill: "사건 순서",
+      passage: STUDENT_NAME + " 학생이 본문 내용을 사건 순서대로 정리하려고 합니다.\n\n(A) People didn't have enough food because crops failed.\n(B) Mt. Tambora exploded, creating a huge cloud of ash.\n(C) Karl von Drais invented the first bicycle.\n(D) Many horses were killed for food, so people needed a new way to travel.",
+      question: "본문의 흐름에 맞게 사건의 순서를 배열한 것은?",
+      options: [
+        "① A - B - D - C",
+        "② B - A - D - C",
+        "③ B - D - A - C",
+        "④ A - D - B - C",
+        "⑤ B - C - A - D"
+      ],
+      answer: 1,
+      explain: "(B) 화산 폭발 → (A) 흉작·식량 부족 → (D) 말도 식용으로 → (C) 자전거 발명. 정답은 ②번 B-A-D-C."
     },
     {
-      origin: "원본 50번 (대화 빈칸) 변형",
+      origin: "원본 33번 (이유)",
+      psg: "본문 A · Tambora/자전거",
+      type: "short",
+      skill: "이유 서술",
+      passage: P_TAMBORA,
+      question: "본문에 따르면, Tambora 화산 폭발이 결국 자전거 발명으로 이어진 이유를 한글 한 문장으로 쓰시오.",
+      hint: "화산재 → 흉작 → ? → 말 식용 → 새 이동수단 필요",
+      acceptableAnswers: ["식량", "음식", "말", "이동수단", "교통"],
+      matchMode: "any-keyword",
+      explain: "예시 답안: \"화산재로 작물이 죽어 식량이 부족해졌고, 말까지 식량으로 잡아먹었기 때문에 새로운 이동수단이 필요해졌다.\""
+    },
+
+    // ============ PASSAGE B: COFFEE POT WEBCAM ============
+    {
+      origin: "원본 32번 (빈칸)",
+      psg: "본문 B · 커피포트 웹캠",
+      type: "mcq",
+      skill: "연결어 빈칸",
+      passage: "Dr. Quentin Stafford-Fraser and Dr. Paul Jardetzky were working in a computer lab in England. There was only one coffee machine in the building. So they had to make many disappointing trips to the empty coffee pot. ___________, the two researchers set up a camera in front of the coffee machine.",
+      question: "빈칸에 들어갈 연결어로 가장 적절한 것은?",
+      options: [
+        "① For example",
+        "② As a solution",
+        "③ However",
+        "④ In contrast",
+        "⑤ Finally"
+      ],
+      answer: 1,
+      explain: "빈 커피포트로 가는 헛걸음을 줄이기 위한 '해결책으로서(As a solution)' 카메라를 설치한 것."
+    },
+    {
+      origin: "원본 44번 (구체적 정보)",
+      psg: "본문 B · 커피포트 웹캠",
+      type: "short",
+      skill: "본문 숫자",
+      passage: "The camera took pictures of the coffee pot ___________ times a minute.",
+      question: "본문에 따라 빈칸에 들어갈 영어 단어를 쓰시오. (숫자를 영어 단어로)",
+      hint: "1분에 몇 번 사진을 찍었을까요? (three / four / five 중 하나)",
+      acceptableAnswers: ["three", "3"],
+      matchMode: "any-keyword",
+      explain: "정답: three. \"The camera took pictures of the coffee pot three times a minute.\""
+    },
+    {
+      origin: "원본 30번 변형 (제목)",
+      psg: "본문 B · 커피포트 웹캠",
+      type: "mcq",
+      skill: "글의 제목",
+      passage: P_COFFEE,
+      question: "윗글의 제목으로 가장 적절한 것은?",
+      options: [
+        "① The Most Popular Coffee in England",
+        "② The First Webcam Was Invented to Watch a Coffee Pot",
+        "③ How to Make Better Coffee at Work",
+        "④ The History of Cambridge University",
+        "⑤ Why Computer Labs Need More Workers"
+      ],
+      answer: 1,
+      explain: "본문 첫 문장이 그대로 주제: 최초의 웹캠은 커피포트를 보기 위해 발명되었다."
+    },
+    {
+      origin: "원본 36번 변형 (어휘 빈칸)",
+      psg: "본문 B · 커피포트 웹캠",
+      type: "short",
+      skill: "어휘 빈칸",
+      passage: "There was only one coffee machine in the building. So, they had to make many ___________ trips to the empty coffee pot.",
+      question: "빈칸에 들어갈 형용사를 본문에서 찾아 영어로 쓰시오. (뜻: 실망스러운)",
+      hint: "빈 커피포트를 보고 돌아오는 발걸음의 느낌. dis-로 시작",
+      acceptableAnswers: ["disappointing"],
+      explain: "정답: disappointing. 'disappointing trips' — 커피가 다 떨어진 걸 보고 실망스럽게 돌아온 발걸음."
+    },
+    {
+      origin: "원본 40번 (요지)",
+      psg: "본문 B · 커피포트 웹캠",
+      type: "mcq",
+      skill: "글의 요지",
+      passage: P_COFFEE,
+      question: "윗글의 요지로 가장 적절한 것은?",
+      options: [
+        "① 영국 케임브리지는 컴퓨터 공학의 중심지이다.",
+        "② 커피는 연구자에게 꼭 필요한 음료이다.",
+        "③ 사소한 일상의 불편함도 위대한 발명의 출발점이 될 수 있다.",
+        "④ 좋은 연구를 위해서는 충분한 휴식이 중요하다.",
+        "⑤ 카메라는 보안용으로 발명되었다."
+      ],
+      answer: 2,
+      explain: "커피포트를 자꾸 헛걸음하는 작은 불편함이 웹캠이라는 큰 발명을 낳았다는 흐름 → ③번."
+    },
+    {
+      origin: "원본 41번 (구체적 정보)",
+      psg: "본문 B · 커피포트 웹캠",
+      type: "short",
+      skill: "장소 정보",
+      passage: "In 1991, Dr. Quentin Stafford-Fraser and Dr. Paul Jardetzky were working in a computer lab in ___________.",
+      question: "본문에 따라 빈칸에 들어갈 나라 이름을 영어로 쓰시오.",
+      hint: "두 박사가 일하던 나라",
+      acceptableAnswers: ["england"],
+      explain: "정답: England. \"in a computer lab in England.\""
+    },
+
+    // ============ PASSAGE C: BETTE GRAHAM / WHITEOUT ============
+    {
+      origin: "원본 35번 (제목)",
+      psg: "본문 C · Bette Graham 수정액",
+      type: "mcq",
+      skill: "글의 제목",
+      passage: P_GRAHAM,
+      question: "윗글의 제목으로 가장 적절한 것은?",
+      options: [
+        "① The Best Bank in Texas",
+        "② How a Bad Typist Invented Whiteout",
+        "③ Why Painters Are Important Artists",
+        "④ The History of Modern Typewriters",
+        "⑤ How to Become a Good Bank Teller"
+      ],
+      answer: 1,
+      explain: "타자를 잘 못 치던 Graham이 자기 실수를 가리기 위해 수정액을 만들었다는 내용 → ②번."
+    },
+    {
+      origin: "원본 44번 변형 (직업)",
+      psg: "본문 C · Bette Graham 수정액",
+      type: "short",
+      skill: "본문 어휘",
+      passage: "In 1956, Bette Graham was working at a ___________ in Texas, USA.",
+      question: "빈칸에 들어갈 본문 단어를 영어로 쓰시오.",
+      hint: "Graham이 일하던 곳 (4글자, b로 시작)",
+      acceptableAnswers: ["bank"],
+      explain: "정답: bank. Bette Graham은 1956년에 텍사스의 은행에서 타자수로 일했음."
+    },
+    {
+      origin: "원본 45번 (시기/연도)",
+      psg: "본문 C · Bette Graham 수정액",
+      type: "mcq",
+      skill: "구체적 정보",
+      passage: P_GRAHAM,
+      question: "본문에 따르면 수정액(Whiteout)이 발명된 해는 언제인가?",
+      options: [
+        "① 1815",
+        "② 1817",
+        "③ 1956",
+        "④ 1991",
+        "⑤ 2001"
+      ],
+      answer: 2,
+      explain: "본문: \"In 1956, Graham was working at a bank...\". 1956년."
+    },
+    {
+      origin: "원본 33번 변형 (아이디어 출처)",
+      psg: "본문 C · Bette Graham 수정액",
+      type: "short",
+      skill: "본문 정보 찾기",
+      passage: P_GRAHAM,
+      question: "Bette Graham은 어디에서 수정액에 대한 아이디어를 얻었습니까? 영어로 답하시오. (3~5단어)",
+      hint: "어느 날 거리에서 본 사람들",
+      acceptableAnswers: ["window painters", "from window painters", "painters"],
+      matchMode: "any-keyword",
+      explain: "정답: from window painters. 창문에 페인트칠하는 사람들이 실수했을 때 그 위에 덧칠하는 모습을 보고 영감을 얻음."
+    },
+    {
+      origin: "원본 43번 (일치하지 않는 것)",
+      psg: "본문 C · Bette Graham 수정액",
+      type: "mcq",
+      skill: "내용 일치하지 않는 것",
+      passage: P_GRAHAM,
+      question: "윗글의 내용과 일치하지 않는 것은?",
+      options: [
+        "① Whiteout was invented in 1956.",
+        "② Bette Graham worked at a bank in Texas.",
+        "③ Graham was a very good typist.",
+        "④ Graham got the idea from window painters.",
+        "⑤ At first, nobody noticed her white paint corrections."
+      ],
+      answer: 2,
+      explain: "본문은 \"Graham was a BAD typist\" → ③번의 'very good typist'는 일치하지 않음."
+    },
+    {
+      origin: "원본 32번 변형 (어휘 빈칸)",
+      psg: "본문 C · Bette Graham 수정액",
+      type: "short",
+      skill: "본문 동사",
+      passage: "At that time, people had to ___________ the whole page when they made even a small mistake.",
+      question: "빈칸에 들어갈 본문의 동사를 쓰시오. (뜻: 다시 타이핑하다 / re-로 시작)",
+      hint: "작은 실수만 해도 페이지 전체를 다시 쳐야 했음",
+      acceptableAnswers: ["retype"],
+      explain: "정답: retype. 'retype the whole page' — 수정액이 없던 시절에는 작은 실수에도 페이지 전체를 다시 타이핑해야 했음."
+    },
+
+    // ============ MIXED / NAME / CONVERSATION ============
+    {
+      origin: "원본 34번 변형 (대화 빈칸)",
+      psg: "혼합 · 본문 인물 확인",
+      type: "mcq",
+      skill: "본문 인물",
+      passage: "이주연: Hey Tom, do you know who invented the first bicycle?\nTom: No, I have no idea. Who was it?\n이주연: It was a German man named ___________ in 1817.\nTom: Wow! That's amazing.",
+      question: "빈칸에 들어갈 사람 이름으로 본문과 일치하는 것은?",
+      options: [
+        "① Bette Graham",
+        "② Karl von Drais",
+        "③ Quentin Stafford-Fraser",
+        "④ Paul Jardetzky",
+        "⑤ Mr. Tambora"
+      ],
+      answer: 1,
+      explain: "본문 A에 따르면 1817년 독일에서 최초의 자전거를 발명한 사람은 Karl von Drais."
+    },
+    {
+      origin: "원본 50번 (대화 빈칸)",
+      psg: "혼합 · 일기예보 대화",
       type: "short",
       skill: "대화 빈칸 단어",
-      passage: STUDENT_NAME + ": Did you check the ____________ for tomorrow?\nTom: Yes. It will snow heavily, so school may close.",
-      question: "빈칸에 들어갈 가장 적절한 영어 한 단어를 쓰시오.",
-      hint: "내일 눈이 많이 온다는 정보 → '일기예보' 또는 '날씨'",
-      acceptableAnswers: ["weather","forecast"],
-      matchMode: "any-keyword",
-      explain: "정답: weather (또는 forecast)."
+      passage: "이주연: Tom, did you check the weather ___________ for tomorrow?\nTom: Yes. It says it's going to rain heavily.\n이주연: Really? It's quite sunny now.\nTom: Yeah, but the ___________ says it's going to rain on Monday too.",
+      question: "두 빈칸에 공통으로 들어갈 영어 단어를 쓰시오. (뜻: 일기예보)",
+      hint: "weather ___________ = 일기예보. f로 시작",
+      acceptableAnswers: ["forecast"],
+      explain: "정답: forecast. 'weather forecast'는 일기예보. (50번 원본의 정답 선지 ⑤번과 동일)"
     }
   ];
 
   var answers = {};
   var startTime = null;
-
   function $(id){ return document.getElementById(id); }
-
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, function(c){
       return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
@@ -475,8 +559,7 @@
         optionsHtml = '<div class="options" id="opts' + idx + '">' +
           p.options.map(function(opt, oi){
             return '<label data-i="' + oi + '" data-pi="' + idx + '"><span>' + escapeHtml(opt) + '</span></label>';
-          }).join('') +
-          '</div>';
+          }).join('') + '</div>';
       } else {
         optionsHtml =
           '<input type="text" class="text-input" id="input' + idx + '" placeholder="여기에 답을 입력하세요..." />' +
@@ -486,6 +569,7 @@
         '<div class="meta">' +
           '<span class="' + typeClass + '">문제 ' + (idx + 1) + ' · ' + typeLabel + '</span>' +
           '<span class="badge orig">' + escapeHtml(p.origin) + '</span>' +
+          '<span class="badge psg">' + escapeHtml(p.psg) + '</span>' +
           '<span class="badge gray">' + escapeHtml(p.skill) + '</span>' +
         '</div>' +
         '<h3>' + escapeHtml(p.question).replace(/\n/g,'<br/>') + '</h3>' +
@@ -498,20 +582,14 @@
         '<div class="explanation hide" id="exp' + idx + '"></div>';
       main.appendChild(div);
     });
-
-    // Delegate clicks
     main.addEventListener('click', function(e){
       var lbl = e.target.closest('.options label');
       if (lbl) {
-        var pi = parseInt(lbl.getAttribute('data-pi'));
-        var oi = parseInt(lbl.getAttribute('data-i'));
-        selectOption(pi, oi);
+        selectOption(parseInt(lbl.getAttribute('data-pi')), parseInt(lbl.getAttribute('data-i')));
         return;
       }
       var btn = e.target.closest('button[data-submit]');
-      if (btn) {
-        submitAnswer(parseInt(btn.getAttribute('data-submit')));
-      }
+      if (btn) submitAnswer(parseInt(btn.getAttribute('data-submit')));
     });
   }
 
@@ -559,13 +637,11 @@
   function normalize(s) {
     return String(s).toLowerCase().replace(/[.?!,;:'"()\[\]]/g, '').trim();
   }
-
   function checkShortAnswer(p, ans) {
     var a = normalize(ans);
     if (p.matchMode === 'all-keywords' && p.requireKeywords) {
       return p.requireKeywords.every(function(g){
-        var opts = g.split('|');
-        return opts.some(function(o){ return a.indexOf(o.toLowerCase()) !== -1; });
+        return g.split('|').some(function(o){ return a.indexOf(o.toLowerCase()) !== -1; });
       });
     }
     if (p.matchMode === 'any-keyword') {
@@ -584,14 +660,12 @@
     $('progressLabel').textContent = done + ' / ' + PROBLEMS.length + ' 문제 완료';
     $('progressPercent').textContent = pct + '%';
   }
-
   function checkAllDone() {
     if (Object.keys(answers).length === PROBLEMS.length) {
       unlockExplanations();
       showComplete();
     }
   }
-
   function unlockExplanations() {
     PROBLEMS.forEach(function(p, idx){
       var exp = $('exp' + idx);
@@ -607,7 +681,6 @@
         '<div style="margin-top:8px;"><b>💡 해설:</b> ' + escapeHtml(p.explain) + '</div>';
     });
   }
-
   function showComplete() {
     var correct = 0;
     Object.keys(answers).forEach(function(k){ if (answers[k].isCorrect) correct++; });
@@ -619,11 +692,8 @@
     $('elapsedTime').textContent = minutes + '분';
     $('completeSection').classList.remove('hide');
     $('messagePreview').textContent = buildMessage();
-    setTimeout(function(){
-      $('completeSection').scrollIntoView({behavior:'smooth'});
-    }, 300);
+    setTimeout(function(){ $('completeSection').scrollIntoView({behavior:'smooth'}); }, 300);
   }
-
   function buildMessage() {
     var correct = 0;
     Object.keys(answers).forEach(function(k){ if (answers[k].isCorrect) correct++; });
@@ -632,7 +702,7 @@
     var wrongList = [];
     PROBLEMS.forEach(function(p, i){
       if (answers[i] && !answers[i].isCorrect) {
-        wrongList.push('  · 문제 ' + (i+1) + ' (' + p.skill + ')');
+        wrongList.push('  · 문제 ' + (i+1) + ' (' + p.psg + ' / ' + p.skill + ')');
       }
     });
     return [
@@ -649,54 +719,37 @@
       '확인 부탁드려요~ 감사합니다! 💝'
     ].join('\n');
   }
-
   function copyToClipboard(text) {
     if (navigator.clipboard && window.isSecureContext) {
       navigator.clipboard.writeText(text).catch(function(){ fallbackCopy(text); });
-    } else {
-      fallbackCopy(text);
-    }
+    } else { fallbackCopy(text); }
   }
   function fallbackCopy(text) {
     var ta = document.createElement('textarea');
     ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
+    ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
     try { document.execCommand('copy'); } catch(e){}
     document.body.removeChild(ta);
   }
-
   function sendKakao() {
-    var msg = buildMessage();
-    copyToClipboard(msg);
+    copyToClipboard(buildMessage());
     showToast('메시지가 복사됐어요! 카톡을 열어서 붙여넣기 하세요 📋');
     setTimeout(function(){
       var isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
-      if (isMobile) {
-        window.location.href = 'kakaotalk://';
-      } else {
-        window.open('https://accounts.kakao.com/login', '_blank');
-      }
+      if (isMobile) window.location.href = 'kakaotalk://';
+      else window.open('https://accounts.kakao.com/login', '_blank');
     }, 800);
   }
-
-  function copyOnly() {
-    copyToClipboard(buildMessage());
-    showToast('메시지가 복사됐어요! 📋');
-  }
-
+  function copyOnly() { copyToClipboard(buildMessage()); showToast('메시지가 복사됐어요! 📋'); }
   function downloadResult() {
-    var msg = buildMessage();
-    var blob = new Blob([msg], { type: 'text/plain;charset=utf-8' });
+    var blob = new Blob([buildMessage()], { type: 'text/plain;charset=utf-8' });
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = STUDENT_NAME + '_3단원_오답클리닉_결과.txt';
     a.click();
     showToast('결과 파일이 저장됐어요! 💾');
   }
-
   function showToast(msg) {
     var t = $('toast');
     t.textContent = msg;
@@ -704,15 +757,13 @@
     setTimeout(function(){ t.classList.remove('show'); }, 2500);
   }
 
-  // 이벤트 바인딩 (DOM이 이미 준비되어 있음 - script가 body 마지막에 있음)
   $('startBtn').addEventListener('click', startQuiz);
   $('kakaoBtn').addEventListener('click', sendKakao);
   $('copyBtn').addEventListener('click', copyOnly);
   $('downloadBtn').addEventListener('click', downloadResult);
-
-  console.log('✅ 클리닉 스크립트 로드 완료. PROBLEMS:', PROBLEMS.length);
+  console.log('✅ 클리닉 v2 로드 완료. 문제 수:', PROBLEMS.length);
 })();
 </script>
 </body>
 </html>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+                                                                                                                                                                                                                                                                                                
