@@ -765,4 +765,77 @@
     PROBLEMS.forEach(function(p, i){
       if (answers[i] && !answers[i].isCorrect) {
         var ua = answers[i].selected;
-        var myAns = p.type === 'mcq' ? p.options[ua] : '"' + ua + '"'
+        var myAns = p.type === 'mcq' ? p.options[ua] : '"' + ua + '"';
+        var correctAns = p.type === 'mcq' ? p.options[p.answer] : p.acceptableAnswers[0];
+        wrongBlocks.push(
+          '━━━━━━━━━━━━━━━\n' +
+          '❌ 문제 ' + (i+1) + ' [' + p.psg + ']\n' +
+          '   유형: ' + p.skill + '\n' +
+          '   ❓ ' + p.question.split('\n')[0] + '\n' +
+          '   📝 ' + STUDENT_NAME + ' 답: ' + myAns + '\n' +
+          '   ✅ 정답: ' + correctAns + '\n' +
+          '   💡 해설: ' + p.explain + '\n' +
+          '   👉 다음엔 꼭 맞힐 수 있어요!'
+        );
+      }
+    });
+
+    var lines = [
+      '안녕하세요 ' + TEACHER_NAME + '님! 🌸',
+      '',
+      encourage,
+      '',
+      '📚 동아 윤정미 · Lesson 3 What a Great Idea',
+      '📝 총 ' + PROBLEMS.length + '문제 / ✅ ' + correct + '정답 / ❌ ' + wrong + '오답',
+      '⏱ 풀이 시간: ' + minutes + '분',
+      '📊 정답률: ' + rate + '%',
+      ''
+    ];
+
+    if (wrongBlocks.length > 0) {
+      lines.push('🔍 함께 봐주실 오답 ' + wrongBlocks.length + '개와 친절 해설입니다:');
+      lines.push('');
+      lines = lines.concat(wrongBlocks);
+      lines.push('━━━━━━━━━━━━━━━');
+      lines.push('');
+      lines.push(STUDENT_NAME + ' 학생이 다음 시험에서 꼭 맞힐 수 있도록 한 번 더 봐주세요! 💝');
+    } else {
+      lines.push('🎉🎉 모든 문제를 다 맞혔어요!! 🎉🎉');
+      lines.push(STUDENT_NAME + ' 학생 정말 자랑스러워요 ✨');
+    }
+
+    lines.push('');
+    lines.push('감사합니다, ' + TEACHER_NAME + '님!');
+    return lines.join('\n');
+  }
+  function copyToClipboard(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).catch(function(){ fallbackCopy(text); });
+    } else { fallbackCopy(text); }
+  }
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); } catch(e){}
+    document.body.removeChild(ta);
+  }
+  function copyMessage() {
+    copyToClipboard(buildMessage());
+    showToast('메시지가 복사됐어요! 카톡 열어서 붙여넣기 하세요 📋');
+  }
+  function showToast(msg) {
+    var t = $('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function(){ t.classList.remove('show'); }, 2500);
+  }
+
+  $('startBtn').addEventListener('click', startQuiz);
+  $('copyBtn').addEventListener('click', copyMessage);
+  console.log('✅ 클리닉 v3 로드 완료. 문제 수:', PROBLEMS.length);
+})();
+</script>
+</body>
+</html>
