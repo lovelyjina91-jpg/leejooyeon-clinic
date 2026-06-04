@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>주연이 오답 클리닉 · Lesson 3 (6/4)</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink:#ff4d8d; --pink-d:#e23271; --mint:#19d3c5; --mint-d:#0fb3a6;
+    --yellow:#ffd23f; --ink:#2b2440; --paper:#fff7fb; --card:#ffffff;
+    --line:#ffd9e7; --ok:#19c37d; --no:#ff6b6b; --lock:#9a8fb3;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  body{margin:0; font-family:'Noto Sans KR',sans-serif; color:var(--ink);
+    background:linear-gradient(160deg,#fff0f6 0%,#eafffb 60%,#fffbe6 100%); min-height:100vh;}
+  .wrap{max-width:760px; margin:0 auto; padding:0 16px 80px;}
+  .hidden{display:none !important;}
+
+  /* 헤더 */
+  header{background:linear-gradient(120deg,var(--pink),var(--mint)); color:#fff;
+    padding:28px 22px; border-radius:0 0 26px 26px; box-shadow:0 8px 26px rgba(255,77,141,.28);}
+  header .tag{display:inline-block; background:rgba(255,255,255,.25); padding:4px 12px;
+    border-radius:999px; font-size:13px; font-weight:700; margin-bottom:10px;}
+  header h1{margin:0; font-size:26px; font-weight:900; letter-spacing:-.5px;}
+  header p{margin:8px 0 0; font-size:14px; opacity:.95;}
+
+  /* 진행률 */
+  .progress{position:sticky; top:0; z-index:20; background:rgba(255,247,251,.95);
+    backdrop-filter:blur(6px); padding:12px 16px; margin:0 -16px 18px; border-bottom:1px solid var(--line);}
+  .bar{height:12px; background:#ffe1ec; border-radius:999px; overflow:hidden;}
+  .bar > span{display:block; height:100%; width:0;
+    background:linear-gradient(90deg,var(--pink),var(--mint)); transition:width .35s;}
+  .ptext{font-size:13px; font-weight:700; margin-top:6px; color:var(--pink-d);}
+
+  /* 시작 화면 */
+  .start{background:var(--card); border-radius:22px; padding:26px 22px; margin-top:20px;
+    box-shadow:0 6px 22px rgba(0,0,0,.06); border:2px solid var(--line);}
+  .start h2{margin:0 0 8px; font-size:22px; color:var(--pink-d);}
+  .start ul{padding-left:20px; line-height:1.9; font-size:15px;}
+  .kbd{display:inline-block; background:#fff; border:2px solid var(--line); border-bottom-width:3px;
+    border-radius:7px; padding:0 8px; font-weight:700; font-size:13px; color:var(--pink-d);}
+  .btn{display:block; width:100%; border:none; cursor:pointer; font-family:inherit;
+    font-weight:900; font-size:18px; padding:16px; border-radius:16px; color:#fff;
+    background:linear-gradient(120deg,var(--pink),var(--pink-d)); box-shadow:0 6px 16px rgba(226,50,113,.35);
+    transition:transform .12s;}
+  .btn:active{transform:scale(.98);}
+
+  /* 본문 카드 */
+  .passage{background:#fffdf4; border:2px dashed var(--mint); border-radius:16px;
+    padding:16px 18px; margin:22px 0 14px;}
+  .passage .ptitle{font-weight:900; color:var(--mint-d); font-size:14px; margin-bottom:8px;}
+  .passage p{margin:0 0 8px; font-size:14.5px; line-height:1.7; color:#3a3358;}
+
+  /* 문제 카드 */
+  .q{background:var(--card); border-radius:18px; padding:20px; margin:14px 0;
+    box-shadow:0 4px 16px rgba(0,0,0,.05); border:2px solid #f1eaf6; transition:border-color .2s;}
+  .q.done-ok{border-color:var(--ok);}
+  .q.done-no{border-color:var(--no);}
+  .badges{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;}
+  .badge{font-size:11.5px; font-weight:700; padding:3px 9px; border-radius:999px;}
+  .b-mc{background:#e7f9f5; color:var(--mint-d);}
+  .b-sa{background:#fff0d6; color:#c98a00;}
+  .b-src{background:#ffe9f1; color:var(--pink-d);}
+  .b-skill{background:#efeaff; color:#7a5bd0;}
+  .qnum{font-size:13px; font-weight:900; color:var(--lock); margin-bottom:4px;}
+  .qtext{font-size:16px; font-weight:700; line-height:1.6; margin-bottom:14px;}
+  .qtext .blank{color:var(--pink-d); font-weight:900;}
+
+  .opts{display:flex; flex-direction:column; gap:9px;}
+  .opt{display:flex; align-items:center; gap:10px; padding:12px 14px; border:2px solid #eee;
+    border-radius:12px; cursor:pointer; font-size:15px; background:#fff; transition:all .15s;}
+  .opt:hover{border-color:var(--mint);}
+  .opt .kn{flex:none; width:24px; height:24px; border-radius:50%; background:#f2eefb;
+    display:flex; align-items:center; justify-content:center; font-weight:900; font-size:13px; color:#7a5bd0;}
+  .opt.sel{border-color:var(--pink); background:#fff4f8;}
+  .opt.correct{border-color:var(--ok); background:#eafff5;}
+  .opt.wrong{border-color:var(--no); background:#fff0f0;}
+  .opt.disabled{cursor:default; opacity:.85;}
+
+  .sa-row{display:flex; gap:8px;}
+  .sa-row input{flex:1; padding:13px 14px; border:2px solid #eee; border-radius:12px;
+    font-family:inherit; font-size:15px;}
+  .sa-row input:focus{outline:none; border-color:var(--mint);}
+  .sa-go{flex:none; padding:0 18px; border:none; border-radius:12px; font-weight:900; color:#fff;
+    background:var(--mint-d); cursor:pointer; font-family:inherit;}
+
+  .verdict{margin-top:12px; font-weight:800; font-size:14px; padding:10px 12px; border-radius:10px;}
+  .verdict.ok{background:#eafff5; color:var(--ok);}
+  .verdict.no{background:#fff0f0; color:var(--no);}
+
+  /* 해설 */
+  .explain{margin-top:12px; padding:14px; border-radius:12px; background:#f7f3ff; border-left:5px solid #7a5bd0;}
+  .explain .lock{color:var(--lock); font-weight:700; font-size:13.5px;}
+  .explain .ans{font-weight:900; color:var(--pink-d); margin-bottom:6px;}
+  .explain .txt{font-size:14px; line-height:1.7; color:#403a55;}
+
+  /* 결과 */
+  .result{background:var(--card); border-radius:22px; padding:28px 22px; margin-top:24px;
+    text-align:center; box-shadow:0 8px 26px rgba(0,0,0,.08); border:2px solid var(--line);}
+  .result h2{margin:0 0 6px; font-size:24px; color:var(--pink-d);}
+  .score-big{font-size:54px; font-weight:900; background:linear-gradient(120deg,var(--pink),var(--mint));
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; margin:8px 0;}
+  .stats{display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin:14px 0 4px;}
+  .stat{background:#fff7fb; border:2px solid var(--line); border-radius:14px; padding:10px 16px; min-width:84px;}
+  .stat b{display:block; font-size:20px; color:var(--pink-d);}
+  .stat span{font-size:12px; color:var(--lock);}
+  .kakao-box{margin-top:20px; text-align:left;}
+  .kakao-box h3{font-size:16px; color:var(--mint-d); margin:0 0 8px;}
+  .preview{white-space:pre-wrap; background:#fffef6; border:2px dashed var(--yellow);
+    border-radius:14px; padding:16px; font-size:13px; line-height:1.65; max-height:300px; overflow:auto; color:#3a3358;}
+  .kbtn{display:block; width:100%; margin-top:14px; border:none; cursor:pointer; font-family:inherit;
+    font-weight:900; font-size:18px; padding:17px; border-radius:16px; color:#3a1d00;
+    background:#fee500; box-shadow:0 6px 16px rgba(254,229,0,.5);}
+  .kbtn:active{transform:scale(.98);}
+  .toast{position:fixed; left:50%; bottom:28px; transform:translateX(-50%) translateY(20px);
+    background:var(--ink); color:#fff; padding:13px 22px; border-radius:14px; font-weight:700; font-size:14px;
+    opacity:0; pointer-events:none; transition:all .3s; z-index:50;}
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+  .foot{text-align:center; color:var(--lock); font-size:12px; margin-top:24px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <span class="tag">🌸 동아(윤정미) · Lesson 3 What a Great Idea</span>
+    <h1>👧 주연이 오답 클리닉</h1>
+    <p>6월 4일 시험에서 틀린 8문제를 <b>한글 선택지 변형문제</b>로 다시 연습해요!</p>
+  </header>
+
+  <!-- 시작 화면 -->
+  <section class="start" id="startScreen">
+    <h2>주연아, 준비됐니? 💪</h2>
+    <p style="font-size:15px; line-height:1.8;">
+      오늘 틀린 <b>5 · 9 · 13 · 14 · 17 · 19 · 23 · 25번</b>을 다시 공부할 거예요.<br>
+      문제마다 <b>비슷한 유형 3개씩</b>, 모두 <b>한글 보기</b>라서 내용과 개념에 집중할 수 있어요.
+    </p>
+    <ul>
+      <li>총 <b>24문제</b> (객관식 16 · 주관식 8)</li>
+      <li>영어 본문은 교과서 원문 그대로, <b>보기는 한글</b> 🇰🇷</li>
+      <li>🔒 <b>해설은 24문제를 모두 푼 뒤</b> 한꺼번에 열려요</li>
+      <li>⌨️ 객관식 <span class="kbd">1</span>~<span class="kbd">5</span> 선택, 주관식은 입력 후 <span class="kbd">Enter</span></li>
+    </ul>
+    <button class="btn" id="startBtn">🚀 클리닉 시작하기</button>
+  </section>
+
+  <!-- 진행률 -->
+  <div class="progress hidden" id="progressBar">
+    <div class="bar"><span id="barFill"></span></div>
+    <div class="ptext" id="barText">0 / 24 문제 풀이 완료</div>
+  </div>
+
+  <!-- 문제 영역 -->
+  <main id="quizArea" class="hidden"></main>
+
+  <!-- 결과 -->
+  <section class="result hidden" id="resultScreen">
+    <h2>🎉 클리닉 완료!</h2>
+    <div class="score-big" id="scoreBig">0점</div>
+    <div class="stats" id="statsRow"></div>
+    <p style="font-size:14px; color:var(--lock); margin-top:14px;">위로 올려서 <b>모든 문제의 해설</b>을 확인해 보세요! 📖</p>
+    <div class="kakao-box">
+      <h3>💬 지나티처님께 보낼 메시지</h3>
+      <div class="preview" id="kakaoPreview"></div>
+      <button class="kbtn" id="copyBtn">💬 카카오톡 메시지 복사하기</button>
+    </div>
+  </section>
+
+  <div class="foot">주연 전용 클리닉 · 만든이 코워크 🤖</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== 본문 (교과서 원문 그대로) ===== */
+const PASSAGES = {
+  A: {title:"📖 본문 A · 화산과 자전거", html:`
+    <p>Mt. Tambora, a volcano in Indonesia, exploded in 1815. The explosion created a huge cloud of ash, so crops failed around the world. As a result, people didn't have enough food to eat. Surprisingly, this made traveling difficult. Why? In those days, people rode horses, but many horses were killed for food.</p>
+    <p>People needed a new way to travel, and Karl von Drais invented the first bicycle in Germany in 1817. Drais's bicycle had two wooden wheels but no pedals. How did it move without pedals? Well, riders simply pushed the bicycle forward with their feet. The present-day bicycle is the result of many inventors' work in the 19th century.</p>`},
+  B: {title:"📖 본문 B · 최초의 웹캠", html:`
+    <p>The first webcam was invented to watch a coffee pot. In 1991, Dr. Quentin Stafford-Fraser and Dr. Paul Jardetzky were working at a computer lab in England. To work better, they needed lots of coffee. However, there was only one coffee machine in the building. So, they had to make many exciting trips to the empty coffee pot.</p>
+    <p>As a solution, the two researchers set up a camera in front of the coffee machine. The camera took pictures of the coffee pot three times a minute. With special software, all the researchers in the building could see the pictures on their local network. No more disappointing trips!</p>`},
+  C: {title:"📖 본문 C · 수정액(화이트)의 탄생", html:`
+    <p>One day, Graham saw some window painters. When they made a mistake, they corrected it by simply painting over it. The next day, she made her own white paint and used it to correct her typing mistakes. Surprisingly, nobody noticed! Soon, everybody at the bank began using it.</p>`}
+};
+
+/* ===== 문제 데이터 (보기는 한글) =====
+   type: mc(객관식) / sa(주관식)
+   원본 8문제 × 3개 = 24
+*/
+const QUESTIONS = [
+/* ---- 원본 5번 (추론 / 본문 A) ---- */
+{src:"A", origin:"원본 5번 유형", skill:"내용 추론", type:"mc",
+ q:`<b>[5-1]</b> 윗글을 읽고 <b>추론할 수 있는 내용</b>으로 가장 알맞은 것은?`,
+ opts:["화산 폭발은 사람들의 이동 방식까지 바꿀 수 있다.","자전거는 농작물을 더 잘 기르려고 만들어졌다.","1815년에 말은 오직 식량으로만 쓰였다.","드라이스는 자전거에 페달을 달아 더 빠르게 만들었다.","독일 사람들은 다른 지역보다 식량이 더 많았다."],
+ answer:0, explain:"화산 폭발 → 전 세계 흉년 → 식량 부족 → 말을 잡아먹음 → 새 이동수단(자전거) 발명. 하나의 자연재해가 사람들의 '이동 방식'까지 바꾼 흐름을 읽어내야 해요."},
+{src:"A", origin:"원본 5번 유형", skill:"원인·결과", type:"mc",
+ q:`<b>[5-2]</b> 윗글로 보아, 사람들이 <b>새로운 이동 수단</b>을 찾게 된 직접적인 이유는?`,
+ opts:["자동차가 너무 비쌌기 때문에","말이 식량으로 잡혀 그 수가 줄었기 때문에","자전거가 더 빠르고 편했기 때문에","도로가 새로 많이 생겼기 때문에","사람들이 운동을 하고 싶어 했기 때문에"],
+ answer:1, explain:"본문의 'many horses were killed for food'가 핵심. 타고 다니던 말이 식량으로 사라지자 새 이동수단이 필요해졌어요."},
+{src:"A", origin:"원본 5번 유형", skill:"흐름 파악(주관식)", type:"sa",
+ q:`<b>[5-3]</b> 다음 흐름의 빈칸에 알맞은 말을 <b>한글</b>로 쓰세요.<br>「화산 폭발 → 전 세계 (　?　) → 식량 부족 → 말을 잡아먹음 → 자전거 발명」`,
+ accept:["흉년","흉작","농사 망함","농작물이 안 됨","농작물 실패","농사실패","수확실패","crops failed","crop failed"],
+ answerLabel:"흉년 (농작물이 잘 안 됨)", explain:"'crops failed around the world' = 전 세계적으로 농작물이 안 됨 = 흉년. 그래서 먹을 식량이 부족해졌어요."},
+
+/* ---- 원본 9번 (어휘 문맥 / 본문 A) ---- */
+{src:"A", origin:"원본 9번 유형", skill:"문맥상 어휘", type:"mc",
+ q:`<b>[9-1]</b> 마지막 문장 "riders simply pushed the bicycle <span class='blank'>(　?　)</span> with their feet"에서 <b>문맥상 알맞은 방향</b>은?`,
+ opts:["뒤로 (backward)","앞으로 (forward)","옆으로 (sideways)","위로 (upward)","아래로 (downward)"],
+ answer:1, explain:"자전거는 '앞으로' 나아가야 하니까 forward가 맞아요. backward(뒤로)는 문맥상 어색해요. (원본에서 backward가 함정이었죠!)"},
+{src:"A", origin:"원본 9번 유형", skill:"문맥상 어휘", type:"mc",
+ q:`<b>[9-2]</b> "people didn't have <span class='blank'>(　?　)</span> food to eat"의 빈칸 단어의 <b>뜻</b>으로 알맞은 것은? (enough)`,
+ opts:["충분한","부족한","비싼","신선한","위험한"],
+ answer:0, explain:"enough = 충분한. 'didn't have enough food'는 '충분한 음식을 갖지 못했다' = 식량이 부족했다는 뜻이에요."},
+{src:"A", origin:"원본 9번 유형", skill:"문맥상 어휘(주관식)", type:"sa",
+ q:`<b>[9-3]</b> "this made traveling <span class='blank'>(　?　)</span>" — 식량이 부족해지자 여행은 어떻게 되었나요? 빈칸 단어(difficult)의 <b>한글 뜻</b>을 쓰세요.`,
+ accept:["어려운","어려움","어려워졌다","어렵다","힘든","힘들어졌다","곤란한"],
+ answerLabel:"어려운 (어려워졌다)", explain:"difficult = 어려운. 말이 사라져서 여행하기가 '어려워졌다'는 의미예요."},
+
+/* ---- 원본 13번 (지시어 / 본문 B) ---- */
+{src:"B", origin:"원본 13번 유형", skill:"지시어 파악", type:"mc",
+ q:`<b>[13-1]</b> "they had to make many exciting trips to the empty coffee pot"에서 <b>they</b>가 가리키는 것은?`,
+ opts:["두 명의 연구원","건물 안 모든 사람","커피 기계들","카메라들","실험실 학생들"],
+ answer:0, explain:"they = 앞 문장의 Dr. Quentin Stafford-Fraser와 Dr. Paul Jardetzky, 즉 '두 명의 연구원'이에요."},
+{src:"B", origin:"원본 13번 유형", skill:"지시어·내용", type:"mc",
+ q:`<b>[13-2]</b> "<b>The camera</b> took pictures of the coffee pot three times a minute."에서 The camera가 한 일은?`,
+ opts:["1분에 세 번 커피포트 사진을 찍었다","커피를 직접 내렸다","연구원들에게 커피를 배달했다","빈 커피포트를 치웠다","소프트웨어를 새로 만들었다"],
+ answer:0, explain:"three times a minute = 1분에 세 번. 카메라가 커피포트를 1분에 세 번 찍어 사진을 보여줬어요."},
+{src:"B", origin:"원본 13번 유형", skill:"지시어(주관식)", type:"sa",
+ q:`<b>[13-3]</b> "all the researchers could see <b>the pictures</b>"에서 the pictures는 <b>무엇의 사진</b>인가요? 한글로 쓰세요.`,
+ accept:["커피포트","커피 포트","커피포트의 사진","커피주전자","커피 주전자","주전자","coffee pot","커피포트사진"],
+ answer:0, answerLabel:"커피포트(커피 주전자)", explain:"카메라가 찍은 것은 'the coffee pot'. 그래서 the pictures는 커피포트(주전자)의 사진이에요."},
+
+/* ---- 원본 14번 (답할 수 없는 질문 / 본문 A) ---- */
+{src:"A", origin:"원본 14번 유형", skill:"세부 정보", type:"mc",
+ q:`<b>[14-1]</b> 윗글(본문 A)을 읽고 <b>답할 수 없는</b> 질문은?`,
+ opts:["탐보라 화산은 어디에 있는가?","화산은 언제 폭발했는가?","잿구름은 농작물에 어떤 영향을 주었는가?","말은 어떤 먹이를 먹었는가?","사람들은 왜 말을 잡아먹었는가?"],
+ answer:3, explain:"본문에 말이 '무엇을 먹었는지'는 나오지 않아요. 나머지는 모두 본문에서 찾을 수 있어요(인도네시아 / 1815년 / 흉년 / 식량 부족)."},
+{src:"A", origin:"원본 14번 유형", skill:"세부 정보", type:"mc",
+ q:`<b>[14-2]</b> 윗글(본문 A)을 읽고 <b>답할 수 있는</b> 질문은?`,
+ opts:["드라이스는 자전거를 몇 대 팔았는가?","최초의 자전거는 어느 나라에서 발명되었는가?","자전거의 가격은 얼마였는가?","화산재는 며칠 동안 떠 있었는가?","드라이스는 몇 살에 죽었는가?"],
+ answer:1, explain:"'invented the first bicycle in Germany'에서 독일이라고 나와요. 나머지는 본문에 정보가 없어요."},
+{src:"A", origin:"원본 14번 유형", skill:"세부 정보(주관식)", type:"sa",
+ q:`<b>[14-3]</b> 본문 A에서 <b>최초의 자전거를 발명한 사람</b>의 이름을 찾아 쓰세요. (영어 또는 한글)`,
+ accept:["karl von drais","karl von drais.","drais","카를 폰 드라이스","드라이스","폰 드라이스"],
+ answerLabel:"Karl von Drais (카를 폰 드라이스)", explain:"독일의 Karl von Drais가 1817년에 최초의 자전거를 발명했어요."},
+
+/* ---- 원본 17번 (빈칸 요약 / 본문 C) ---- */
+{src:"C", origin:"원본 17번 유형", skill:"요약·빈칸", type:"mc",
+ q:`<b>[17-1]</b> 본문 C를 한 문장으로 요약할 때 빈칸에 알맞은 말은?<br>「그레이엄은 페인트공이 실수를 (㉠)하는 방법을 (㉡), 자신의 타자 실수를 고치는 방법을 찾았다.」`,
+ opts:["㉠ 덧칠하는 / ㉡ 보고","㉠ 무시하는 / ㉡ 듣고","㉠ 지우는 / ㉡ 잊고","㉠ 자랑하는 / ㉡ 읽고","㉠ 칠하는 / ㉡ 포기하고"],
+ answer:0, explain:"페인트공이 실수를 '덧칠해서(painting over)' 가리는 것을 '보고(saw/watching)' 아이디어를 얻었어요."},
+{src:"C", origin:"원본 17번 유형", skill:"세부 내용", type:"mc",
+ q:`<b>[17-2]</b> 그레이엄이 <b>타자 실수를 고치기 위해</b> 사용한 것은?`,
+ opts:["자신이 직접 만든 흰색 페인트","새 타자기","지우개 달린 연필","컴퓨터 소프트웨어","검은색 잉크"],
+ answer:0, explain:"'she made her own white paint and used it to correct her typing mistakes' — 직접 만든 흰색 페인트로 고쳤어요. 이게 바로 '수정액(화이트)'의 시작!"},
+{src:"C", origin:"원본 17번 유형", skill:"세부 내용(주관식)", type:"sa",
+ q:`<b>[17-3]</b> 그레이엄에게 수정액 아이디어를 준 사람들은 누구인가요? 한글로 쓰세요.`,
+ accept:["창문 페인트공","페인트공","창문에 페인트칠하는 사람","페인트칠하는 사람","창문 칠하는 사람","window painters","페인트칠 하는 사람들","창문페인트공"],
+ answerLabel:"창문에 페인트칠하던 사람들(페인트공)", explain:"window painters(창문 페인트공)가 실수를 덧칠로 가리는 걸 보고 아이디어를 얻었어요."},
+
+/* ---- 원본 19번 (어법 / 본문 B) ---- */
+{src:"B", origin:"원본 19번 유형", skill:"어법(시제)", type:"mc",
+ q:`<b>[19-1]</b> "The camera <span class='blank'>took</span> pictures..." — 이 문장은 과거에 있었던 일이에요. 밑줄 친 took에 대한 설명으로 <b>옳은</b> 것은?`,
+ opts:["과거 시제이므로 take의 과거형 took이 맞다","현재이므로 takes가 맞다","진행형이므로 taking이 맞다","미래이므로 will take가 맞다","수동태이므로 was taken이 맞다"],
+ answer:0, explain:"1991년에 있었던 과거 사건이므로 take의 과거형 took이 맞아요. 시제를 먼저 확인하는 습관이 중요해요!"},
+{src:"B", origin:"원본 19번 유형", skill:"어법(소유격)", type:"mc",
+ q:`<b>[19-2]</b> "all the researchers ... could see the pictures on <span class='blank'>(　?　)</span> local network." 빈칸에 알맞은 소유격은?`,
+ opts:["그들의 (their)","그것의 (its)","나의 (my)","너의 (your)","그녀의 (her)"],
+ answer:0, explain:"주어가 the researchers(복수)이므로 소유격은 their. its(그것의)는 단수라서 어법상 틀려요. (원본 함정!)"},
+{src:"B", origin:"원본 19번 유형", skill:"어법(수동태·주관식)", type:"sa",
+ q:`<b>[19-3]</b> "The first webcam <span class='blank'>(　?　)</span> invented to watch a coffee pot." — '발명되었다'는 수동의 뜻이에요. 빈칸에 알맞은 be동사 한 단어를 쓰세요.`,
+ accept:["was"],
+ answerLabel:"was (was invented)", explain:"'발명되었다'는 수동태 「be + 과거분사」. 주어 webcam이 단수·과거이므로 was invented가 맞아요."},
+
+/* ---- 원본 23번 (요지 / 본문 B) ---- */
+{src:"B", origin:"원본 23번 유형", skill:"요지·주제", type:"mc",
+ q:`<b>[23-1]</b> 본문 B의 <b>요지(가장 하고 싶은 말)</b>로 가장 알맞은 것은?`,
+ opts:["작은 불편함이 새로운 발명의 시작이 될 수 있다.","큰 건물에서 일하면 쉽게 피곤해진다.","과학자는 커피가 충분해야 일을 잘한다.","영국의 연구실에는 최고의 커피 기계가 있다.","사무실에는 커피포트가 많아야 한다."],
+ answer:0, explain:"'커피포트까지 헛걸음하는 작은 불편'을 해결하려다 최초의 웹캠이 탄생했어요. 작은 불편 → 위대한 발명이 주제예요."},
+{src:"B", origin:"원본 23번 유형", skill:"세부 내용", type:"mc",
+ q:`<b>[23-2]</b> 두 연구원이 <b>카메라를 설치한 이유</b>로 가장 알맞은 것은?`,
+ opts:["빈 커피포트까지 헛걸음하지 않으려고","도둑을 잡으려고","커피 기계를 광고하려고","동료들의 사진을 찍으려고","새 소프트웨어를 팔려고"],
+ answer:0, explain:"커피가 비어 있는데도 모르고 갔다 오는 'disappointing trips(헛걸음)'을 없애려고 카메라를 달았어요."},
+{src:"B", origin:"원본 23번 유형", skill:"주제어(주관식)", type:"sa",
+ q:`<b>[23-3]</b> 본문 B에서 최초의 웹캠이 처음 '관찰하기 위해(to watch)' 만들어진 대상은 무엇인가요? 한글로 쓰세요.`,
+ accept:["커피포트","커피 포트","커피주전자","커피 주전자","주전자","coffee pot","커피포트(주전자)"],
+ answer:0, answerLabel:"커피포트(커피 주전자)", explain:"'The first webcam was invented to watch a coffee pot' — 커피포트를 지켜보려고 만들었어요."},
+
+/* ---- 원본 25번 (이어질 내용 / 본문 C) ---- */
+{src:"C", origin:"원본 25번 유형", skill:"이어질 내용", type:"mc",
+ q:`<b>[25-1]</b> 밑줄 친 "곧, 은행의 모든 사람이 <b>그것을 쓰기 시작했다</b>" 다음에 이어질 내용으로 가장 알맞은 것은?`,
+ opts:["그것은 매우 유용한 발명품이었다.","그 페인트는 색이 매우 화려했다.","은행 사람들은 게을렀다.","모두가 화가가 되고 싶어 했다.","그녀는 페인트를 비싸게 팔았다."],
+ answer:0, explain:"모두가 따라 쓰기 시작했다는 것은 그만큼 '유용한 발명품'이었다는 흐름으로 자연스럽게 이어져요."},
+{src:"C", origin:"원본 25번 유형", skill:"지시어", type:"mc",
+ q:`<b>[25-2]</b> 밑줄 친 'it(그것)'이 가리키는 것은?`,
+ opts:["그레이엄이 만든 흰색 수정 페인트","타자기","창문","은행 건물","페인트공의 붓"],
+ answer:0, explain:"it = 앞에서 그레이엄이 만든 'her own white paint(흰색 수정 페인트)'를 가리켜요."},
+{src:"C", origin:"원본 25번 유형", skill:"추론(주관식)", type:"sa",
+ q:`<b>[25-3]</b> 아무도 알아채지 못한(nobody noticed) 이유는, 그 페인트가 <b>종이 색</b>과 같았기 때문이에요. 무슨 색일까요? 한글로 쓰세요.`,
+ accept:["흰색","하얀색","하양","흰","화이트","white","흰색깔"],
+ answerLabel:"흰색", explain:"종이는 흰색이라, 흰색 페인트로 덧칠하면 표가 안 나서 아무도 눈치채지 못했어요."},
+];
+
+/* ===== 상태 ===== */
+let answered = new Array(QUESTIONS.length).fill(false);
+let correct  = new Array(QUESTIONS.length).fill(false);
+let studentAns = new Array(QUESTIONS.length).fill("");
+let revealed = false;
+const startTime = Date.now();
+
+const $ = s => document.querySelector(s);
+const norm = s => (s||"").toString().trim().toLowerCase().replace(/[.\s]/g,"");
+
+/* ===== 렌더 ===== */
+function buildQuiz(){
+  const area = $("#quizArea");
+  let lastSrc = null;
+  QUESTIONS.forEach((item, i)=>{
+    if(item.src !== lastSrc){
+      const p = PASSAGES[item.src];
+      const pdiv = document.createElement("div");
+      pdiv.className = "passage";
+      pdiv.innerHTML = `<div class="ptitle">${p.title}</div>${p.html}`;
+      area.appendChild(pdiv);
+      lastSrc = item.src;
+    }
+    const card = document.createElement("section");
+    card.className = "q";
+    card.id = "q"+i;
+    const typeBadge = item.type==="mc"
+      ? `<span class="badge b-mc">객관식</span>`
+      : `<span class="badge b-sa">주관식</span>`;
+    let inner = `
+      <div class="badges">
+        ${typeBadge}
+        <span class="badge b-src">${item.origin}</span>
+        <span class="badge b-skill">${item.skill}</span>
+      </div>
+      <div class="qnum">문제 ${i+1} / 24</div>
+      <div class="qtext">${item.q}</div>`;
+    if(item.type==="mc"){
+      inner += `<div class="opts" id="opts${i}">`;
+      const kor = ["①","②","③","④","⑤"];
+      item.opts.forEach((o,oi)=>{
+        inner += `<div class="opt" data-q="${i}" data-o="${oi}"><span class="kn">${kor[oi]}</span><span>${o}</span></div>`;
+      });
+      inner += `</div>`;
+    } else {
+      inner += `<div class="sa-row">
+        <input type="text" id="sa${i}" data-q="${i}" placeholder="답을 한글(또는 영어)로 입력" autocomplete="off">
+        <button class="sa-go" data-q="${i}">제출</button></div>`;
+    }
+    inner += `<div class="verdict hidden" id="vd${i}"></div>`;
+    inner += `<div class="explain hidden" id="ex${i}"></div>`;
+    card.innerHTML = inner;
+    area.appendChild(card);
+  });
+
+  area.querySelectorAll(".opt").forEach(el=>{
+    el.addEventListener("click", ()=>{
+      const qi=+el.dataset.q, oi=+el.dataset.o;
+      if(answered[qi]) return;
+      submitMC(qi, oi);
+    });
+  });
+  area.querySelectorAll(".sa-go").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const qi=+btn.dataset.q;
+      if(answered[qi]) return;
+      submitSA(qi);
+    });
+  });
+  area.querySelectorAll(".sa-row input").forEach(inp=>{
+    inp.addEventListener("keydown", e=>{
+      if(e.key==="Enter"){ e.preventDefault(); const qi=+inp.dataset.q; if(!answered[qi]) submitSA(qi); }
+    });
+  });
+}
+
+function submitMC(qi, oi){
+  answered[qi]=true;
+  const item=QUESTIONS[qi];
+  const isOk = oi===item.answer;
+  correct[qi]=isOk;
+  studentAns[qi]=item.opts[oi];
+  const opts=document.querySelectorAll(`#opts${qi} .opt`);
+  opts.forEach((el,idx)=>{
+    el.classList.add("disabled");
+    if(idx===item.answer) el.classList.add("correct");
+    if(idx===oi && !isOk) el.classList.add("wrong");
+    if(idx===oi && isOk) el.classList.add("sel");
+  });
+  finishQ(qi,isOk);
+}
+function submitSA(qi){
+  const inp=document.querySelector(`#sa${qi}`);
+  const val=inp.value;
+  if(!norm(val)){ inp.focus(); return; }
+  answered[qi]=true;
+  const item=QUESTIONS[qi];
+  const isOk=item.accept.some(a=>norm(a)===norm(val) || norm(val).includes(norm(a)) );
+  correct[qi]=isOk;
+  studentAns[qi]=val.trim();
+  inp.disabled=true;
+  document.querySelector(`.sa-go[data-q='${qi}']`).disabled=true;
+  finishQ(qi,isOk);
+}
+function finishQ(qi,isOk){
+  const card=$("#q"+qi);
+  card.classList.add(isOk?"done-ok":"done-no");
+  const vd=$("#vd"+qi);
+  vd.classList.remove("hidden");
+  vd.classList.add(isOk?"ok":"no");
+  vd.textContent = isOk ? "⭕ 정답! (해설은 모두 푼 뒤 공개돼요)" : "❌ 아쉬워요! (해설은 모두 푼 뒤 공개돼요)";
+  updateProgress();
+}
+
+function updateProgress(){
+  const n=answered.filter(Boolean).length;
+  $("#barFill").style.width=(n/QUESTIONS.length*100)+"%";
+  $("#barText").textContent=`${n} / ${QUESTIONS.length} 문제 풀이 완료`;
+  if(n===QUESTIONS.length && !revealed) revealAll();
+}
+
+function revealAll(){
+  revealed=true;
+  QUESTIONS.forEach((item,i)=>{
+    const ex=$("#ex"+i);
+    const ansText = item.type==="mc"
+      ? `① ② ③ ④ ⑤ 중 「${["①","②","③","④","⑤"][item.answer]} ${item.opts[item.answer]}」`
+      : (item.answerLabel||item.accept[0]);
+    ex.innerHTML=`<div class="ans">✅ 정답: ${ansText}</div><div class="txt">💡 ${item.explain}</div>`;
+    ex.classList.remove("hidden");
+  });
+  showResult();
+}
+
+function showResult(){
+  const total=QUESTIONS.length;
+  const got=correct.filter(Boolean).length;
+  const score=Math.round(got/total*100);
+  const sec=Math.round((Date.now()-startTime)/1000);
+  const mm=Math.floor(sec/60), ss=sec%60;
+  $("#scoreBig").textContent=score+"점";
+  $("#statsRow").innerHTML=`
+    <div class="stat"><b>${total}</b><span>전체</span></div>
+    <div class="stat"><b>${got}</b><span>정답</span></div>
+    <div class="stat"><b>${total-got}</b><span>오답</span></div>
+    <div class="stat"><b>${mm}:${String(ss).padStart(2,"0")}</b><span>풀이시간</span></div>`;
+  $("#resultScreen").classList.remove("hidden");
+  $("#kakaoPreview").textContent=buildMessage(score,got,total,sec);
+  $("#resultScreen").scrollIntoView({behavior:"smooth"});
+}
+
+function buildMessage(score,got,total,sec){
+  const name="주연";
+  let cheer;
+  if(score===100) cheer=`와! ${name}, 전부 다 맞혔어요!! 정말 대단해요 🌟`;
+  else if(score>=80) cheer="정말 잘했어요! 거의 다 맞혔네요 👍";
+  else if(score>=60) cheer="잘 풀었어요! 몇 개만 더 보면 완벽해요 💪";
+  else if(score>=40) cheer="끝까지 푼 게 정말 멋져요! 오답 같이 보면 금방 늘어요 🌱";
+  else cheer="어려운 단원 끝까지 푼 것만으로도 박수! 같이 차근차근 봐요 🤗";
+  const mm=Math.floor(sec/60), ss=sec%60;
+  let m="";
+  m+="안녕하세요 지나티처님! 🌸\n\n";
+  m+=`${cheer}\n\n`;
+  m+="📊 6/4 오답 클리닉 결과 (Lesson 3)\n";
+  m+=`· 전체: ${total}문제\n· 정답: ${got}개\n· 오답: ${total-got}개\n`;
+  m+=`· 풀이시간: ${mm}분 ${ss}초\n· 정답률: ${score}%\n`;
+
+  const wrong=[];
+  QUESTIONS.forEach((item,i)=>{ if(!correct[i]) wrong.push(i); });
+
+  if(wrong.length===0){
+    m+="\n🎉🎉 모든 문제를 다 맞혔어요!! 🎉🎉\n";
+    m+=`${name} 정말 자랑스러워요 ✨\n`;
+  } else {
+    wrong.forEach(i=>{
+      const item=QUESTIONS[i];
+      const ans = item.type==="mc"
+        ? `${["①","②","③","④","⑤"][item.answer]} ${item.opts[item.answer]}`
+        : (item.answerLabel||item.accept[0]);
+      m+="\n━━━━━━━━━━━━━━\n";
+      m+=`❌ 문제 ${i+1} [${item.origin}]\n`;
+      m+=`유형: ${item.skill}\n`;
+      m+=`📝 ${name} 답: ${studentAns[i]||"(미입력)"}\n`;
+      m+=`✅ 정답: ${ans}\n`;
+      m+=`💡 해설: ${item.explain}\n`;
+      m+="👉 다음엔 꼭 맞힐 수 있어요!\n";
+    });
+    m+="\n━━━━━━━━━━━━━━\n";
+  }
+  m+="\n수고했어~~ ㅎㅎㅎ";
+  return m;
+}
+
+/* ===== 키보드 ===== */
+document.addEventListener("keydown", e=>{
+  if($("#quizArea").classList.contains("hidden")) return;
+  if(["1","2","3","4","5"].includes(e.key)){
+    const qi=topUnanswered();
+    if(qi<0) return;
+    const item=QUESTIONS[qi];
+    if(item.type==="mc"){
+      const oi=+e.key-1;
+      if(oi<item.opts.length){ submitMC(qi,oi); }
+    } else {
+      const inp=$("#sa"+qi); if(inp) inp.focus();
+    }
+  }
+});
+function topUnanswered(){
+  let best=-1, bestTop=Infinity;
+  QUESTIONS.forEach((_,i)=>{
+    if(answered[i]) return;
+    const r=$("#q"+i).getBoundingClientRect();
+    if(r.bottom>80 && r.top<bestTop){ bestTop=r.top; best=i; }
+  });
+  return best;
+}
+
+/* ===== 시작 / 복사 ===== */
+$("#startBtn").addEventListener("click", ()=>{
+  $("#startScreen").classList.add("hidden");
+  $("#progressBar").classList.remove("hidden");
+  $("#quizArea").classList.remove("hidden");
+  buildQuiz();
+  updateProgress();
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+
+$("#copyBtn").addEventListener("click", ()=>{
+  const text=$("#kakaoPreview").textContent;
+  navigator.clipboard.writeText(text).then(showToast).catch(()=>{
+    const ta=document.createElement("textarea"); ta.value=text; document.body.appendChild(ta);
+    ta.select(); document.execCommand("copy"); ta.remove(); showToast();
+  });
+});
+function showToast(){
+  const t=$("#toast");
+  t.textContent="메시지가 복사됐어요! 카톡 열어서 붙여넣기 하세요 📋";
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),2600);
+}
+</script>
+</body>
+</html>
