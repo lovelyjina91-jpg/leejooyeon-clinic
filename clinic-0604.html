@@ -137,10 +137,10 @@
       문제마다 <b>비슷한 유형 3개씩</b>, 모두 <b>한글 보기</b>라서 내용과 개념에 집중할 수 있어요.
     </p>
     <ul>
-      <li>총 <b>24문제</b> (객관식 16 · 주관식 8)</li>
+      <li>총 <b>24문제</b> (모두 객관식)</li>
       <li>영어 본문은 교과서 원문 그대로, <b>보기는 한글</b> 🇰🇷</li>
       <li>🔒 <b>해설은 24문제를 모두 푼 뒤</b> 한꺼번에 열려요</li>
-      <li>⌨️ 객관식 <span class="kbd">1</span>~<span class="kbd">5</span> 선택, 주관식은 입력 후 <span class="kbd">Enter</span></li>
+      <li>⌨️ <span class="kbd">1</span>~<span class="kbd">5</span> 숫자키로 보기 선택</li>
     </ul>
     <button class="btn" id="startBtn">🚀 클리닉 시작하기</button>
   </section>
@@ -167,7 +167,7 @@
     </div>
   </section>
 
-  <div class="foot">주연 전용 클리닉 · 만든이 코워크 🤖</div>
+  <div class="foot">주연 전용 클리닉 · 만든이 - 영핏 영어 -</div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -199,10 +199,10 @@ const QUESTIONS = [
  q:`<b>[5-2]</b> 윗글로 보아, 사람들이 <b>새로운 이동 수단</b>을 찾게 된 직접적인 이유는?`,
  opts:["자동차가 너무 비쌌기 때문에","말이 식량으로 잡혀 그 수가 줄었기 때문에","자전거가 더 빠르고 편했기 때문에","도로가 새로 많이 생겼기 때문에","사람들이 운동을 하고 싶어 했기 때문에"],
  answer:1, explain:"본문의 'many horses were killed for food'가 핵심. 타고 다니던 말이 식량으로 사라지자 새 이동수단이 필요해졌어요."},
-{src:"A", origin:"원본 5번 유형", skill:"흐름 파악(주관식)", type:"sa",
- q:`<b>[5-3]</b> 다음 흐름의 빈칸에 알맞은 말을 <b>한글</b>로 쓰세요.<br>「화산 폭발 → 전 세계 (　?　) → 식량 부족 → 말을 잡아먹음 → 자전거 발명」`,
- accept:["흉년","흉작","농사 망함","농작물이 안 됨","농작물 실패","농사실패","수확실패","crops failed","crop failed"],
- answerLabel:"흉년 (농작물이 잘 안 됨)", explain:"'crops failed around the world' = 전 세계적으로 농작물이 안 됨 = 흉년. 그래서 먹을 식량이 부족해졌어요."},
+{src:"A", origin:"원본 5번 유형", skill:"흐름 파악", type:"mc",
+ q:`<b>[5-3]</b> 다음 흐름의 빈칸에 알맞은 말은?<br>「화산 폭발 → 전 세계 (　?　) → 식량 부족 → 말을 잡아먹음 → 자전거 발명」`,
+ opts:["풍년 (농작물이 넘침)","흉년 (농작물이 잘 안 됨)","지진","홍수","전쟁"],
+ answer:1, explain:"'crops failed around the world' = 전 세계적으로 농작물이 안 됨 = 흉년. 그래서 먹을 식량이 부족해졌어요."},
 
 /* ---- 원본 9번 (어휘 문맥 / 본문 A) ---- */
 {src:"A", origin:"원본 9번 유형", skill:"문맥상 어휘", type:"mc",
@@ -213,10 +213,10 @@ const QUESTIONS = [
  q:`<b>[9-2]</b> "people didn't have <span class='blank'>(　?　)</span> food to eat"의 빈칸 단어의 <b>뜻</b>으로 알맞은 것은? (enough)`,
  opts:["충분한","부족한","비싼","신선한","위험한"],
  answer:0, explain:"enough = 충분한. 'didn't have enough food'는 '충분한 음식을 갖지 못했다' = 식량이 부족했다는 뜻이에요."},
-{src:"A", origin:"원본 9번 유형", skill:"문맥상 어휘(주관식)", type:"sa",
- q:`<b>[9-3]</b> "this made traveling <span class='blank'>(　?　)</span>" — 식량이 부족해지자 여행은 어떻게 되었나요? 빈칸 단어(difficult)의 <b>한글 뜻</b>을 쓰세요.`,
- accept:["어려운","어려움","어려워졌다","어렵다","힘든","힘들어졌다","곤란한"],
- answerLabel:"어려운 (어려워졌다)", explain:"difficult = 어려운. 말이 사라져서 여행하기가 '어려워졌다'는 의미예요."},
+{src:"A", origin:"원본 9번 유형", skill:"문맥상 어휘", type:"mc",
+ q:`<b>[9-3]</b> "this made traveling <span class='blank'>(　?　)</span>" — 식량이 부족해지자 여행은 어떻게 되었나요? 빈칸 단어(difficult)의 <b>한글 뜻</b>으로 알맞은 것은?`,
+ opts:["즐거운","빨라진","편리한","어려운 (어려워졌다)","안전한"],
+ answer:3, explain:"difficult = 어려운. 말이 사라져서 여행하기가 '어려워졌다'는 의미예요."},
 
 /* ---- 원본 13번 (지시어 / 본문 B) ---- */
 {src:"B", origin:"원본 13번 유형", skill:"지시어 파악", type:"mc",
@@ -227,10 +227,10 @@ const QUESTIONS = [
  q:`<b>[13-2]</b> "<b>The camera</b> took pictures of the coffee pot three times a minute."에서 The camera가 한 일은?`,
  opts:["1분에 세 번 커피포트 사진을 찍었다","커피를 직접 내렸다","연구원들에게 커피를 배달했다","빈 커피포트를 치웠다","소프트웨어를 새로 만들었다"],
  answer:0, explain:"three times a minute = 1분에 세 번. 카메라가 커피포트를 1분에 세 번 찍어 사진을 보여줬어요."},
-{src:"B", origin:"원본 13번 유형", skill:"지시어(주관식)", type:"sa",
- q:`<b>[13-3]</b> "all the researchers could see <b>the pictures</b>"에서 the pictures는 <b>무엇의 사진</b>인가요? 한글로 쓰세요.`,
- accept:["커피포트","커피 포트","커피포트의 사진","커피주전자","커피 주전자","주전자","coffee pot","커피포트사진"],
- answer:0, answerLabel:"커피포트(커피 주전자)", explain:"카메라가 찍은 것은 'the coffee pot'. 그래서 the pictures는 커피포트(주전자)의 사진이에요."},
+{src:"B", origin:"원본 13번 유형", skill:"지시어", type:"mc",
+ q:`<b>[13-3]</b> "all the researchers could see <b>the pictures</b>"에서 the pictures는 <b>무엇의 사진</b>인가요?`,
+ opts:["연구원들","컴퓨터 화면","커피포트(커피 주전자)","카메라","건물 외부"],
+ answer:2, explain:"카메라가 찍은 것은 'the coffee pot'. 그래서 the pictures는 커피포트(주전자)의 사진이에요."},
 
 /* ---- 원본 14번 (답할 수 없는 질문 / 본문 A) ---- */
 {src:"A", origin:"원본 14번 유형", skill:"세부 정보", type:"mc",
@@ -241,10 +241,10 @@ const QUESTIONS = [
  q:`<b>[14-2]</b> 윗글(본문 A)을 읽고 <b>답할 수 있는</b> 질문은?`,
  opts:["드라이스는 자전거를 몇 대 팔았는가?","최초의 자전거는 어느 나라에서 발명되었는가?","자전거의 가격은 얼마였는가?","화산재는 며칠 동안 떠 있었는가?","드라이스는 몇 살에 죽었는가?"],
  answer:1, explain:"'invented the first bicycle in Germany'에서 독일이라고 나와요. 나머지는 본문에 정보가 없어요."},
-{src:"A", origin:"원본 14번 유형", skill:"세부 정보(주관식)", type:"sa",
- q:`<b>[14-3]</b> 본문 A에서 <b>최초의 자전거를 발명한 사람</b>의 이름을 찾아 쓰세요. (영어 또는 한글)`,
- accept:["karl von drais","karl von drais.","drais","카를 폰 드라이스","드라이스","폰 드라이스"],
- answerLabel:"Karl von Drais (카를 폰 드라이스)", explain:"독일의 Karl von Drais가 1817년에 최초의 자전거를 발명했어요."},
+{src:"A", origin:"원본 14번 유형", skill:"세부 정보", type:"mc",
+ q:`<b>[14-3]</b> 본문 A에서 <b>최초의 자전거를 발명한 사람</b>은 누구인가요?`,
+ opts:["퀜틴 스태퍼드-프레이저","카를 폰 드라이스 (Karl von Drais)","베티 그레이엄","폴 자뎃츠키","토마스 에디슨"],
+ answer:1, explain:"독일의 Karl von Drais가 1817년에 최초의 자전거를 발명했어요. (나머지 인물은 웹캠·수정액 단원에 나오는 사람들)"},
 
 /* ---- 원본 17번 (빈칸 요약 / 본문 C) ---- */
 {src:"C", origin:"원본 17번 유형", skill:"요약·빈칸", type:"mc",
@@ -255,10 +255,10 @@ const QUESTIONS = [
  q:`<b>[17-2]</b> 그레이엄이 <b>타자 실수를 고치기 위해</b> 사용한 것은?`,
  opts:["자신이 직접 만든 흰색 페인트","새 타자기","지우개 달린 연필","컴퓨터 소프트웨어","검은색 잉크"],
  answer:0, explain:"'she made her own white paint and used it to correct her typing mistakes' — 직접 만든 흰색 페인트로 고쳤어요. 이게 바로 '수정액(화이트)'의 시작!"},
-{src:"C", origin:"원본 17번 유형", skill:"세부 내용(주관식)", type:"sa",
- q:`<b>[17-3]</b> 그레이엄에게 수정액 아이디어를 준 사람들은 누구인가요? 한글로 쓰세요.`,
- accept:["창문 페인트공","페인트공","창문에 페인트칠하는 사람","페인트칠하는 사람","창문 칠하는 사람","window painters","페인트칠 하는 사람들","창문페인트공"],
- answerLabel:"창문에 페인트칠하던 사람들(페인트공)", explain:"window painters(창문 페인트공)가 실수를 덧칠로 가리는 걸 보고 아이디어를 얻었어요."},
+{src:"C", origin:"원본 17번 유형", skill:"세부 내용", type:"mc",
+ q:`<b>[17-3]</b> 그레이엄에게 수정액 아이디어를 준 사람들은 누구인가요?`,
+ opts:["은행 직원들","창문에 페인트칠하던 사람들 (페인트공)","타자기 회사 직원","그레이엄의 가족","화가 친구"],
+ answer:1, explain:"window painters(창문 페인트공)가 실수를 덧칠로 가리는 걸 보고 아이디어를 얻었어요."},
 
 /* ---- 원본 19번 (어법 / 본문 B) ---- */
 {src:"B", origin:"원본 19번 유형", skill:"어법(시제)", type:"mc",
@@ -269,10 +269,10 @@ const QUESTIONS = [
  q:`<b>[19-2]</b> "all the researchers ... could see the pictures on <span class='blank'>(　?　)</span> local network." 빈칸에 알맞은 소유격은?`,
  opts:["그들의 (their)","그것의 (its)","나의 (my)","너의 (your)","그녀의 (her)"],
  answer:0, explain:"주어가 the researchers(복수)이므로 소유격은 their. its(그것의)는 단수라서 어법상 틀려요. (원본 함정!)"},
-{src:"B", origin:"원본 19번 유형", skill:"어법(수동태·주관식)", type:"sa",
- q:`<b>[19-3]</b> "The first webcam <span class='blank'>(　?　)</span> invented to watch a coffee pot." — '발명되었다'는 수동의 뜻이에요. 빈칸에 알맞은 be동사 한 단어를 쓰세요.`,
- accept:["was"],
- answerLabel:"was (was invented)", explain:"'발명되었다'는 수동태 「be + 과거분사」. 주어 webcam이 단수·과거이므로 was invented가 맞아요."},
+{src:"B", origin:"원본 19번 유형", skill:"어법(수동태)", type:"mc",
+ q:`<b>[19-3]</b> "The first webcam <span class='blank'>(　?　)</span> invented to watch a coffee pot." — '발명되었다'는 수동의 뜻이에요. 빈칸에 알맞은 be동사는?`,
+ opts:["is","were","was","are","will be"],
+ answer:2, explain:"'발명되었다'는 수동태 「be + 과거분사」. 주어 webcam이 단수·과거이므로 was invented가 맞아요."},
 
 /* ---- 원본 23번 (요지 / 본문 B) ---- */
 {src:"B", origin:"원본 23번 유형", skill:"요지·주제", type:"mc",
@@ -283,10 +283,10 @@ const QUESTIONS = [
  q:`<b>[23-2]</b> 두 연구원이 <b>카메라를 설치한 이유</b>로 가장 알맞은 것은?`,
  opts:["빈 커피포트까지 헛걸음하지 않으려고","도둑을 잡으려고","커피 기계를 광고하려고","동료들의 사진을 찍으려고","새 소프트웨어를 팔려고"],
  answer:0, explain:"커피가 비어 있는데도 모르고 갔다 오는 'disappointing trips(헛걸음)'을 없애려고 카메라를 달았어요."},
-{src:"B", origin:"원본 23번 유형", skill:"주제어(주관식)", type:"sa",
- q:`<b>[23-3]</b> 본문 B에서 최초의 웹캠이 처음 '관찰하기 위해(to watch)' 만들어진 대상은 무엇인가요? 한글로 쓰세요.`,
- accept:["커피포트","커피 포트","커피주전자","커피 주전자","주전자","coffee pot","커피포트(주전자)"],
- answer:0, answerLabel:"커피포트(커피 주전자)", explain:"'The first webcam was invented to watch a coffee pot' — 커피포트를 지켜보려고 만들었어요."},
+{src:"B", origin:"원본 23번 유형", skill:"주제어", type:"mc",
+ q:`<b>[23-3]</b> 본문 B에서 최초의 웹캠이 처음 '관찰하기 위해(to watch)' 만들어진 대상은 무엇인가요?`,
+ opts:["연구원들의 얼굴","실험실 출입문","컴퓨터 화면","건물 주차장","커피포트(커피 주전자)"],
+ answer:4, explain:"'The first webcam was invented to watch a coffee pot' — 커피포트를 지켜보려고 만들었어요."},
 
 /* ---- 원본 25번 (이어질 내용 / 본문 C) ---- */
 {src:"C", origin:"원본 25번 유형", skill:"이어질 내용", type:"mc",
@@ -297,10 +297,10 @@ const QUESTIONS = [
  q:`<b>[25-2]</b> 밑줄 친 'it(그것)'이 가리키는 것은?`,
  opts:["그레이엄이 만든 흰색 수정 페인트","타자기","창문","은행 건물","페인트공의 붓"],
  answer:0, explain:"it = 앞에서 그레이엄이 만든 'her own white paint(흰색 수정 페인트)'를 가리켜요."},
-{src:"C", origin:"원본 25번 유형", skill:"추론(주관식)", type:"sa",
- q:`<b>[25-3]</b> 아무도 알아채지 못한(nobody noticed) 이유는, 그 페인트가 <b>종이 색</b>과 같았기 때문이에요. 무슨 색일까요? 한글로 쓰세요.`,
- accept:["흰색","하얀색","하양","흰","화이트","white","흰색깔"],
- answerLabel:"흰색", explain:"종이는 흰색이라, 흰색 페인트로 덧칠하면 표가 안 나서 아무도 눈치채지 못했어요."},
+{src:"C", origin:"원본 25번 유형", skill:"추론", type:"mc",
+ q:`<b>[25-3]</b> 아무도 알아채지 못한(nobody noticed) 이유는, 그 페인트가 <b>종이 색</b>과 같았기 때문이에요. 무슨 색일까요?`,
+ opts:["검은색","빨간색","파란색","흰색","노란색"],
+ answer:3, explain:"종이는 흰색이라, 흰색 페인트로 덧칠하면 표가 안 나서 아무도 눈치채지 못했어요."},
 ];
 
 /* ===== 상태 ===== */
@@ -547,3 +547,4 @@ function showToast(){
 </script>
 </body>
 </html>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
