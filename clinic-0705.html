@@ -9,16 +9,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
   :root{
-    --pink:#FF4D8D; --pink-dark:#E23A77; --mint:#00C9A7; --mint-dark:#0AA88D;
-    --yellow:#FFD93D; --cream:#FFF8F0; --ink:#33333D; --grey:#8A8A96;
-    --wrong:#E74C3C; --line:#F0E4D8;
+    --pink:#2F6BFF; --pink-dark:#1E4FD6; --mint:#00B8C4; --mint-dark:#0891A0;
+    --yellow:#FFB020; --cream:#F4F7FB; --ink:#232A36; --grey:#7C8698;
+    --wrong:#E74C3C; --line:#DFE7F2;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:'Noto Sans KR','Malgun Gothic',sans-serif;background:var(--cream);color:var(--ink);line-height:1.6;padding-bottom:60px}
   .wrap{max-width:640px;margin:0 auto;padding:0 14px}
 
   /* 헤더 */
-  header{background:linear-gradient(135deg,var(--pink) 0%,#FF7DA9 55%,var(--yellow) 130%);color:#fff;padding:34px 18px 30px;text-align:center;border-radius:0 0 26px 26px}
+  header{background:linear-gradient(135deg,#16337E 0%,#2F6BFF 60%,#00B8C4 130%);color:#fff;padding:34px 18px 30px;text-align:center;border-radius:0 0 26px 26px}
   header .who{display:inline-block;background:rgba(255,255,255,.22);border:1.5px solid rgba(255,255,255,.6);padding:4px 16px;border-radius:999px;font-weight:700;font-size:.9rem;margin-bottom:10px}
   header h1{font-size:1.45rem;font-weight:900;letter-spacing:-.5px}
   header p{font-size:.86rem;opacity:.92;margin-top:6px}
@@ -27,10 +27,10 @@
   #bar-wrap{position:sticky;top:0;z-index:50;background:var(--cream);padding:10px 0 8px;display:none}
   #bar-inner{max-width:640px;margin:0 auto;padding:0 14px}
   #bar-label{font-size:.8rem;font-weight:700;color:var(--pink);margin-bottom:4px;display:flex;justify-content:space-between}
-  #bar-bg{height:10px;background:#F3E2D3;border-radius:999px;overflow:hidden}
+  #bar-bg{height:10px;background:#DCE5F3;border-radius:999px;overflow:hidden}
   #bar-fill{height:100%;width:0;background:linear-gradient(90deg,var(--mint),var(--pink));border-radius:999px;transition:width .35s}
 
-  .card{background:#fff;border-radius:18px;padding:22px 20px;box-shadow:0 3px 14px rgba(226,58,119,.08);margin:16px 0;border:1.5px solid var(--line)}
+  .card{background:#fff;border-radius:18px;padding:22px 20px;box-shadow:0 3px 14px rgba(30,79,214,.08);margin:16px 0;border:1.5px solid var(--line)}
 
   /* 시작 화면 */
   #start-card h2{color:var(--pink);font-size:1.15rem;font-weight:900;margin-bottom:10px}
@@ -41,8 +41,8 @@
   #name-input:focus{outline:none;border-color:var(--pink)}
   .big-btn{display:block;width:100%;margin-top:14px;padding:15px;font-size:1.08rem;font-weight:900;color:#fff;background:var(--pink);border:none;border-radius:12px;cursor:pointer;font-family:inherit;transition:transform .1s}
   .big-btn:active{transform:scale(.98)}
-  .big-btn:disabled{background:#E5C8D3;cursor:default}
-  .kbd-tip{background:#FFF3D6;border:1.5px dashed var(--yellow);border-radius:10px;padding:10px 14px;font-size:.83rem;margin-top:14px;color:#8a6d1a}
+  .big-btn:disabled{background:#B9C6E6;cursor:default}
+  .kbd-tip{background:#EAF1FF;border:1.5px dashed #9DB8F5;border-radius:10px;padding:10px 14px;font-size:.83rem;margin-top:14px;color:#3856a8}
   kbd{background:#fff;border:1px solid #ddd;border-bottom-width:2px;border-radius:5px;padding:0 6px;font-family:inherit;font-weight:700}
 
   /* 섹션 */
@@ -58,27 +58,27 @@
   .q-card{scroll-margin-top:70px}
   .badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
   .badge{font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
-  .b-mc{background:#FFE3EE;color:var(--pink-dark)}
+  .b-mc{background:#E1EAFF;color:var(--pink-dark)}
   .b-sa{background:#DFF7F0;color:var(--mint-dark)}
-  .b-org{background:var(--yellow);color:#7a5c00}
+  .b-org{background:#FFE6BD;color:#8a5c00}
   .b-var{background:#F1EAFE;color:#7048C9}
   .b-skill{background:#F2F2F5;color:#666}
   .qno{font-weight:900;color:var(--pink);font-size:1.02rem}
   .qtext{font-weight:700;font-size:.98rem;margin:6px 0 14px}
-  .choices button{display:block;width:100%;text-align:left;padding:12px 14px;margin-bottom:8px;font-size:.93rem;font-family:inherit;background:#FFFBF6;border:1.5px solid var(--line);border-radius:11px;cursor:pointer;line-height:1.5;transition:border-color .12s,background .12s}
+  .choices button{display:block;width:100%;text-align:left;padding:12px 14px;margin-bottom:8px;font-size:.93rem;font-family:inherit;background:#F8FAFE;border:1.5px solid var(--line);border-radius:11px;cursor:pointer;line-height:1.5;transition:border-color .12s,background .12s}
   .choices button:hover{border-color:var(--pink)}
   .choices button .cn{color:var(--pink);font-weight:900;margin-right:7px}
-  .choices button.picked{border-color:var(--pink);background:#FFE9F1;font-weight:700}
+  .choices button.picked{border-color:var(--pink);background:#E5EDFF;font-weight:700}
   .choices button:disabled{cursor:default;opacity:.88}
   .sa-row{display:flex;gap:8px}
   .sa-row input{flex:1;padding:12px 14px;font-size:.95rem;border:1.5px solid var(--line);border-radius:11px;font-family:inherit}
   .sa-row input:focus{outline:none;border-color:var(--mint)}
   .sa-row button{padding:12px 18px;font-weight:900;color:#fff;background:var(--mint);border:none;border-radius:11px;cursor:pointer;font-family:inherit;white-space:nowrap}
-  .sa-row input:disabled{background:#faf6f0}
+  .sa-row input:disabled{background:#F2F5FA}
   .verdict{margin-top:10px;font-weight:900;font-size:.9rem;display:none}
   .verdict.ok{color:var(--mint-dark)}
   .verdict.no{color:var(--wrong)}
-  .exp-box{display:none;margin-top:12px;background:#FFF8E8;border-left:5px solid var(--yellow);border-radius:10px;padding:13px 15px;font-size:.88rem}
+  .exp-box{display:none;margin-top:12px;background:#F0F6FF;border-left:5px solid var(--pink);border-radius:10px;padding:13px 15px;font-size:.88rem}
   .exp-box .exp-head{font-weight:900;margin-bottom:4px}
   .exp-box .exp-head.ok{color:var(--mint-dark)}
   .exp-box .exp-head.no{color:var(--wrong)}
@@ -104,7 +104,7 @@
 
 <header>
   <div class="who">👦 이주연 학생 전용</div>
-  <h1>4단원 오답 클리닉 🍧</h1>
+  <h1>4단원 오답 클리닉 ⚡</h1>
   <p>주월중 2학년 · 틀린 문제 8개 × 3문제씩 = 24문제 · 2026.7.5</p>
 </header>
 
@@ -229,7 +229,7 @@ var QUESTIONS = [
   exp:"빈칸 뒤에 점원이 <b>\"How about these hairpins, then?\"</b>(그럼 이 머리핀은 어때요?)이라며 <b>다른 물건</b>을 권하고 있어. 그러니까 ⓐ에는 다른 것을 보여 달라는 ① \"Is there anything else you can show me?\"가 와야 자연스러워.",
   kq:"대화 빈칸에 알맞은 말 고르기" },
 { sec:0, kind:"변형 ②", type:"sa",
-  q:"위 대화의 빈칸 ⓐ에 들어갈 문장이 되도록 아래 단어를 <u>모두 한 번씩</u> 사용하여 배열하시오.<br><span style='font-weight:400;background:#FFF8E8;border-radius:8px;padding:4px 8px;display:inline-block;margin-top:6px'>else / can / me / show / is / anything / there / you</span>",
+  q:"위 대화의 빈칸 ⓐ에 들어갈 문장이 되도록 아래 단어를 <u>모두 한 번씩</u> 사용하여 배열하시오.<br><span style='font-weight:400;background:#EAF1FF;border-radius:8px;padding:4px 8px;display:inline-block;margin-top:6px'>else / can / me / show / is / anything / there / you</span>",
   answers:["is there anything else you can show me","isthereanythingelseyoucanshowme"],
   model:"Is there anything else you can show me?",
   exp:"정답: <b>Is there anything else you can show me?</b> — 의문문이니까 <b>Is there ~?</b>로 시작하고, -thing으로 끝나는 말(anything)은 <b>else가 뒤에서</b> 꾸며 줘. 그 뒤에 you can show me 순서!",
