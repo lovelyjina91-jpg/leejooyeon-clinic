@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>이주연 오답 클리닉 · 4단원 (7/5)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink:#FF4D8D; --pink-dark:#E23A77; --mint:#00C9A7; --mint-dark:#0AA88D;
+    --yellow:#FFD93D; --cream:#FFF8F0; --ink:#33333D; --grey:#8A8A96;
+    --wrong:#E74C3C; --line:#F0E4D8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Noto Sans KR','Malgun Gothic',sans-serif;background:var(--cream);color:var(--ink);line-height:1.6;padding-bottom:60px}
+  .wrap{max-width:640px;margin:0 auto;padding:0 14px}
+
+  /* 헤더 */
+  header{background:linear-gradient(135deg,var(--pink) 0%,#FF7DA9 55%,var(--yellow) 130%);color:#fff;padding:34px 18px 30px;text-align:center;border-radius:0 0 26px 26px}
+  header .who{display:inline-block;background:rgba(255,255,255,.22);border:1.5px solid rgba(255,255,255,.6);padding:4px 16px;border-radius:999px;font-weight:700;font-size:.9rem;margin-bottom:10px}
+  header h1{font-size:1.45rem;font-weight:900;letter-spacing:-.5px}
+  header p{font-size:.86rem;opacity:.92;margin-top:6px}
+
+  /* 진행률 바 */
+  #bar-wrap{position:sticky;top:0;z-index:50;background:var(--cream);padding:10px 0 8px;display:none}
+  #bar-inner{max-width:640px;margin:0 auto;padding:0 14px}
+  #bar-label{font-size:.8rem;font-weight:700;color:var(--pink);margin-bottom:4px;display:flex;justify-content:space-between}
+  #bar-bg{height:10px;background:#F3E2D3;border-radius:999px;overflow:hidden}
+  #bar-fill{height:100%;width:0;background:linear-gradient(90deg,var(--mint),var(--pink));border-radius:999px;transition:width .35s}
+
+  .card{background:#fff;border-radius:18px;padding:22px 20px;box-shadow:0 3px 14px rgba(226,58,119,.08);margin:16px 0;border:1.5px solid var(--line)}
+
+  /* 시작 화면 */
+  #start-card h2{color:var(--pink);font-size:1.15rem;font-weight:900;margin-bottom:10px}
+  #start-card ul{list-style:none;margin:12px 0 18px}
+  #start-card li{padding:7px 0 7px 30px;position:relative;font-size:.92rem}
+  #start-card li::before{content:'✔';position:absolute;left:4px;color:var(--mint);font-weight:900}
+  #name-input{width:100%;padding:13px 15px;font-size:1.05rem;border:2px solid var(--mint);border-radius:12px;font-family:inherit}
+  #name-input:focus{outline:none;border-color:var(--pink)}
+  .big-btn{display:block;width:100%;margin-top:14px;padding:15px;font-size:1.08rem;font-weight:900;color:#fff;background:var(--pink);border:none;border-radius:12px;cursor:pointer;font-family:inherit;transition:transform .1s}
+  .big-btn:active{transform:scale(.98)}
+  .big-btn:disabled{background:#E5C8D3;cursor:default}
+  .kbd-tip{background:#FFF3D6;border:1.5px dashed var(--yellow);border-radius:10px;padding:10px 14px;font-size:.83rem;margin-top:14px;color:#8a6d1a}
+  kbd{background:#fff;border:1px solid #ddd;border-bottom-width:2px;border-radius:5px;padding:0 6px;font-family:inherit;font-weight:700}
+
+  /* 섹션 */
+  .sec-head{margin:30px 0 4px;display:flex;align-items:center;gap:10px}
+  .sec-no{background:var(--mint);color:#fff;font-weight:900;border-radius:10px;padding:3px 12px;font-size:.9rem;white-space:nowrap}
+  .sec-title{font-weight:700;font-size:.95rem;color:var(--mint-dark)}
+  .passage{background:#F4FBF8;border:1.5px solid #CDEDE2;border-radius:14px;padding:16px 18px;font-size:.93rem;margin:10px 0 4px}
+  .passage .ptitle{font-weight:900;text-align:center;margin-bottom:6px;color:var(--mint-dark)}
+  .passage u{text-decoration-color:var(--pink);text-underline-offset:3px}
+  .dlg span.spk{font-weight:900;color:var(--mint-dark);margin-right:4px}
+
+  /* 문제 카드 */
+  .q-card{scroll-margin-top:70px}
+  .badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+  .badge{font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
+  .b-mc{background:#FFE3EE;color:var(--pink-dark)}
+  .b-sa{background:#DFF7F0;color:var(--mint-dark)}
+  .b-org{background:var(--yellow);color:#7a5c00}
+  .b-var{background:#F1EAFE;color:#7048C9}
+  .b-skill{background:#F2F2F5;color:#666}
+  .qno{font-weight:900;color:var(--pink);font-size:1.02rem}
+  .qtext{font-weight:700;font-size:.98rem;margin:6px 0 14px}
+  .choices button{display:block;width:100%;text-align:left;padding:12px 14px;margin-bottom:8px;font-size:.93rem;font-family:inherit;background:#FFFBF6;border:1.5px solid var(--line);border-radius:11px;cursor:pointer;line-height:1.5;transition:border-color .12s,background .12s}
+  .choices button:hover{border-color:var(--pink)}
+  .choices button .cn{color:var(--pink);font-weight:900;margin-right:7px}
+  .choices button.picked{border-color:var(--pink);background:#FFE9F1;font-weight:700}
+  .choices button:disabled{cursor:default;opacity:.88}
+  .sa-row{display:flex;gap:8px}
+  .sa-row input{flex:1;padding:12px 14px;font-size:.95rem;border:1.5px solid var(--line);border-radius:11px;font-family:inherit}
+  .sa-row input:focus{outline:none;border-color:var(--mint)}
+  .sa-row button{padding:12px 18px;font-weight:900;color:#fff;background:var(--mint);border:none;border-radius:11px;cursor:pointer;font-family:inherit;white-space:nowrap}
+  .sa-row input:disabled{background:#faf6f0}
+  .verdict{margin-top:10px;font-weight:900;font-size:.9rem;display:none}
+  .verdict.ok{color:var(--mint-dark)}
+  .verdict.no{color:var(--wrong)}
+  .exp-box{display:none;margin-top:12px;background:#FFF8E8;border-left:5px solid var(--yellow);border-radius:10px;padding:13px 15px;font-size:.88rem}
+  .exp-box .exp-head{font-weight:900;margin-bottom:4px}
+  .exp-box .exp-head.ok{color:var(--mint-dark)}
+  .exp-box .exp-head.no{color:var(--wrong)}
+  .exp-box b{color:var(--pink-dark)}
+  .lock-note{text-align:center;font-size:.8rem;color:var(--grey);margin:26px 0 8px}
+
+  /* 결과 화면 */
+  #result-card{display:none;border:2.5px solid var(--pink)}
+  #result-card h2{color:var(--pink);font-size:1.3rem;font-weight:900;text-align:center}
+  .score-big{font-size:2.6rem;font-weight:900;text-align:center;color:var(--mint-dark);margin:8px 0 2px}
+  .score-sub{text-align:center;color:var(--grey);font-size:.9rem;margin-bottom:10px}
+  #submit-status{text-align:center;font-size:.9rem;margin:12px 0;min-height:1.3em;font-weight:700}
+  #kakao-btn{display:block;width:100%;padding:16px;font-size:1.05rem;font-weight:900;color:#3A1D1D;background:#FEE500;border:none;border-radius:13px;cursor:pointer;font-family:inherit;margin-top:8px}
+  #kakao-btn:active{transform:scale(.98)}
+  #toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(80px);background:var(--ink);color:#fff;padding:12px 22px;border-radius:999px;font-size:.88rem;font-weight:700;opacity:0;transition:all .3s;z-index:99;white-space:nowrap}
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  #kakao-preview{margin-top:14px;background:#F7F7FA;border:1.5px solid #E3E3EC;border-radius:12px;padding:14px;font-size:.8rem;white-space:pre-wrap;max-height:300px;overflow-y:auto;color:#555}
+  .preview-label{font-size:.8rem;color:var(--grey);margin-top:16px;font-weight:700}
+  .hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="who">👧 이주연 학생 전용</div>
+  <h1>4단원 오답 클리닉 🍧</h1>
+  <p>주월중 2학년 · 틀린 문제 8개 × 3문제씩 = 24문제 · 2026.7.5</p>
+</header>
+
+<div id="bar-wrap"><div id="bar-inner">
+  <div id="bar-label"><span>진행률</span><span id="bar-count">0 / 24</span></div>
+  <div id="bar-bg"><div id="bar-fill"></div></div>
+</div></div>
+
+<div class="wrap">
+
+  <!-- 시작 화면 -->
+  <div class="card" id="start-card">
+    <h2>주연아, 시작하기 전에 읽어봐! 📌</h2>
+    <ul>
+      <li>지난 내신대비 예상문제에서 틀린 <b>8문제</b>를 다시 연습해요.</li>
+      <li>각 문제마다 <b>원본 1개 + 유사 변형 2개</b>, 총 <b>24문제</b>!</li>
+      <li>객관식과 주관식(직접 쓰기)이 섞여 있어요.</li>
+      <li>🔒 <b>해설은 24문제를 모두 푼 뒤에</b> 한꺼번에 열려요.</li>
+      <li>다 풀면 결과가 지나티처에게 자동 전송돼요.</li>
+    </ul>
+    <div class="kbd-tip">⌨️ 컴퓨터로 풀 때: 숫자키 <kbd>1</kbd>~<kbd>5</kbd>로 보기 선택, 주관식은 입력 후 <kbd>Enter</kbd>!</div>
+    <input type="text" id="name-input" value="이주연" maxlength="20" autocomplete="off" style="margin-top:16px">
+    <button class="big-btn" id="start-btn">클리닉 시작하기 🚀</button>
+  </div>
+
+  <!-- 문제 영역 (JS 렌더링) -->
+  <div id="quiz-area" class="hidden"></div>
+
+  <!-- 결과 화면 -->
+  <div class="card" id="result-card">
+    <h2>주연아, 정말 수고했어! 🎉</h2>
+    <div class="score-big" id="score-line"></div>
+    <div class="score-sub" id="score-sub"></div>
+    <div id="submit-status"></div>
+    <button id="kakao-btn">💬 카카오톡 메시지 복사하기</button>
+    <div class="preview-label">📱 메시지 미리보기</div>
+    <div id="kakao-preview"></div>
+  </div>
+
+</div>
+<div id="toast"></div>
+
+<script>
+"use strict";
+
+/* ══════ 결과 자동 전송 (영핏 공통 · 전송코드 v1) ══════ */
+var ENGFIT_SUBMIT_URL = "https://script.google.com/macros/s/AKfycbz5IC3cEtaBGW10qZhrjwtjdtGugmcmYb4ZTHS4k-1LOqTRYzW-LfoAPyFB_ShjAqNp/exec";
+async function engfitSubmit(r){
+  var body = JSON.stringify(r);
+  try{
+    var res = await fetch(ENGFIT_SUBMIT_URL,{method:"POST",body:body});
+    var j = await res.json();
+    return j.ok === true;
+  }catch(e){
+    try{ await fetch(ENGFIT_SUBMIT_URL,{method:"POST",mode:"no-cors",body:body}); return true; }
+    catch(e2){ return false; }
+  }
+}
+var _engfitSent = false;
+async function engfitSubmitWithStatus(r){
+  if(_engfitSent) return; _engfitSent = true;
+  var el = document.getElementById("submit-status");
+  if(el){ el.textContent = "결과 전송 중..."; el.style.color = "#888"; }
+  var ok = await engfitSubmit(r);
+  if(el){
+    if(ok){ el.textContent = "✓ 결과가 지나티처에게 자동 전송되었어요"; el.style.color = "#0AA88D"; }
+    else{ el.textContent = "전송이 안 됐어요 — 아래 [카톡 복사] 버튼으로 보내주세요!"; el.style.color = "#c0392b"; }
+  }
+  return ok;
+}
+
+/* ══════ 본문/지문 (교과서·문제집 원문 그대로 — 내용 변형 없음) ══════ */
+var SECTIONS = [
+  { no:"원본 54번", area:"4-1. COMMUNICATION", skill:"대화 · 공통 단어 찾기",
+    passage:'<div class="dlg">'
+      +'<p><span class="spk">B:</span>Hi, I\'m looking for a gift for my younger sister. She\'s twelve.</p>'
+      +'<p><span class="spk">W:</span>How about this small bag?</p>'
+      +'<p><span class="spk">B:</span>Well, <b>___ⓐ___</b>?</p>'
+      +'<p><span class="spk">W:</span>How about these hairpins, then?</p>'
+      +'<p><span class="spk">B:</span>Oh, they\'re so pretty! I\'ll take two of them.</p></div>' },
+  { no:"원본 55번", area:"4-1. COMMUNICATION", skill:"대화 · 내용 추론",
+    passage:'<div class="dlg">'
+      +'<p><span class="spk">M:</span>Can I help you?</p>'
+      +'<p><span class="spk">G:</span>Yes. I\'m looking for a souvenir for my grandmother.</p>'
+      +'<p><span class="spk">M:</span>How about these cookies? This box is 10,000 won.</p>'
+      +'<p><span class="spk">G:</span>Good! I\'ll take two.</p></div>' },
+  { no:"원본 72번", area:"4-2. GRAMMAR", skill:"관계대명사 문장 결합",
+    passage:'<p>The girl is clever and kind.<br>She has many wonderful talents.</p>' },
+  { no:"원본 77번", area:"4-2. GRAMMAR", skill:"to부정사 · 목적 표현",
+    passage:'<div class="ptitle">My Money Plan</div>'
+      +'<p>If someone gives me 100,000 won, I will spend it like this. First, my dad\'s birthday is next week, so <u>(A) I will spend 50,000 won to buy him a present</u>. Second, I\'m interested in helping poor children, so I will donate 20,000 won to an NGO for children. Lastly, I will save 30,000 won.</p>' },
+  { no:"원본 79번", area:"4-2. GRAMMAR", skill:"조건 배열 영작",
+    passage:'<p><b>우리말:</b> 제품의 다양한 가격을 비교하는 현명한 소비자는 결국 더 나은 거래를 찾을 것이다.</p>'
+      +'<p style="margin-top:8px"><b>&lt;조건&gt;</b> 아래 주어진 단어를 모두 한 번씩 사용하여 문장을 완성할 것</p>'
+      +'<p style="margin-top:6px;background:#fff;border:1px dashed #CDEDE2;border-radius:8px;padding:8px 10px">compares / eventually / smart / products / prices / a / better / will / find / the / various / consumer / who / of / deal</p>' },
+  { no:"원본 83번", area:"4-2. GRAMMAR", skill:"어법성 판단",
+    passage:'<p>That\'s the ⓐ <u>hotest</u> dress on social media now. Lots of people are wearing it. I have to get ⓑ <u>those</u> dress, too!</p>'
+      +'<div class="ptitle" style="margin-top:10px">Viral Marketing</div>'
+      +'<p>Wait, Yuna! You only want the dress because you saw it again and again on social media. It isn\'t just you. There are a lot of people who ⓒ <u>falls</u> for a viral marketing strategy. Why?</p>'
+      +'<p style="margin-top:8px">Information about a product can spread ⓓ <u>quick</u> and widely on the Internet, just like a "virus." If a product becomes hot on social media, people naturally want to have ⓔ <u>them</u>. Yuna, just remember that a popular product isn\'t always right for you.</p>' },
+  { no:"원본 84번", area:"4-3. READING", skill:"글의 성격 파악",
+    passage:'<p>Do you think you are a smart shopper? Well, you may think you are, but hold on! There are various marketing strategies which influence your decisions. Learning about them will make you a smarter shopper.</p>' },
+  { no:"원본 90번", area:"4-3. READING", skill:"문장 삽입",
+    passage:'<p style="background:#fff;border:1px solid #CDEDE2;border-radius:8px;padding:8px 10px;margin-bottom:10px"><b>In your case, the 50-dollar lipstick was the anchor.</b></p>'
+      +'<p>Hold on, Somi! ( ① ) Your budget is 30 dollars, but you are buying a 40-dollar lipstick. ( ② ) The 40-dollar lipstick sounds cheap only because the salesperson showed you a 50-dollar lipstick first. ( ③ ) This is an example of the anchoring effect. ( ④ ) Usually, the first piece of information becomes an "anchor" and influences the shopper\'s decision. ( ⑤ ) Somi, don\'t just rely on the first piece of information that is given to you.</p>' }
+];
+
+/* ══════ 문제 데이터 : 원본 8 + 변형 16 = 24 ══════ */
+var CN = ["①","②","③","④","⑤"];
+var QUESTIONS = [
+/* ── 원본 54번 세트 ── */
+{ sec:0, kind:"원본", type:"mc",
+  q:"다음 대화의 빈칸 ⓐ에 들어갈 문장의 단어와 공통된 단어가 사용되지 <u>않은</u> 문장은?",
+  choices:["He doesn't want to eat anything.","Tyler showed his parents the prize.","She can climb a tree in a few seconds.","Is there anything else you want to say?","The story he talked about made me surprised."],
+  answer:1,
+  exp:"ⓐ에는 <b>\"Is there anything else you can show me?\"</b>(다른 것 좀 보여 주시겠어요?)가 들어가. 이 문장의 단어와 비교하면 ① any<b>thing</b>, ③ <b>can</b>, ④ <b>anything else you</b>, ⑤ <b>me</b>가 겹치지만, ② Tyler showed his parents the prize.에는 겹치는 단어가 없어 (showed는 show의 과거형으로 형태가 달라!). 문제에 '않은'이 있는 걸 놓치면 ⓐ와 가장 비슷한 ④를 고르기 쉬우니 조심!",
+  kq:"빈칸 ⓐ 문장과 공통 단어가 없는 문장 고르기" },
+{ sec:0, kind:"변형 ①", type:"mc",
+  q:"위 대화의 흐름으로 보아, 빈칸 ⓐ에 들어갈 말로 가장 적절한 것은?",
+  choices:["is there anything else you can show me","how much is this small bag","I'll take it right now","she really loves small bags","can I get a discount on this bag"],
+  answer:0,
+  exp:"빈칸 뒤에 점원이 <b>\"How about these hairpins, then?\"</b>(그럼 이 머리핀은 어때요?)이라며 <b>다른 물건</b>을 권하고 있어. 그러니까 ⓐ에는 다른 것을 보여 달라는 ① \"Is there anything else you can show me?\"가 와야 자연스러워.",
+  kq:"대화 빈칸에 알맞은 말 고르기" },
+{ sec:0, kind:"변형 ②", type:"sa",
+  q:"위 대화의 빈칸 ⓐ에 들어갈 문장이 되도록 아래 단어를 <u>모두 한 번씩</u> 사용하여 배열하시오.<br><span style='font-weight:400;background:#FFF8E8;border-radius:8px;padding:4px 8px;display:inline-block;margin-top:6px'>else / can / me / show / is / anything / there / you</span>",
+  answers:["is there anything else you can show me","isthereanythingelseyoucanshowme"],
+  model:"Is there anything else you can show me?",
+  exp:"정답: <b>Is there anything else you can show me?</b> — 의문문이니까 <b>Is there ~?</b>로 시작하고, -thing으로 끝나는 말(anything)은 <b>else가 뒤에서</b> 꾸며 줘. 그 뒤에 you can show me 순서!",
+  kq:"빈칸 문장 단어 배열 영작" },
+
+/* ── 원본 55번 세트 ── */
+{ sec:1, kind:"원본", type:"mc",
+  q:"다음 대화의 내용으로 보아 추론할 수 <u>없는</u> 것은?",
+  choices:["The girl is planning to give the souvenir to her grandmother.","The girl is satisfied with the price and the item the man suggested.","The total amount of money the girl needs to pay is 20,000 won.","The man showed several different items before the girl chose the cookies.","The cookies are sold in boxes, and each box costs ten thousand won."],
+  answer:3,
+  exp:"대화에서 남자는 <b>쿠키 딱 한 가지만</b> 권했고 여자아이가 바로 \"Good! I'll take two.\"라고 했어. 그러니까 ④ '여러 가지 물건을 보여 줬다'는 추론할 수 <b>없어</b>. ③은 한 상자에 10,000원 × 2상자 = 20,000원이니까 추론 가능!",
+  kq:"대화에서 추론할 수 없는 것 고르기" },
+{ sec:1, kind:"변형 ①", type:"mc",
+  q:"위 대화의 내용과 일치하는 것은?",
+  choices:["The girl is looking for a souvenir for herself.","The girl thinks the cookies are too expensive.","The girl will pay 20,000 won in total.","The man recommends a scarf first.","The girl decides to buy only one box."],
+  answer:2,
+  exp:"한 상자에 10,000원인데 두 상자를 산다고 했으니(<b>I'll take two</b>) 총 <b>20,000원</b>이야. ① 할머니 선물이고, ② 가격에 만족했고(Good!), ④ 처음부터 쿠키를 권했고, ⑤ 두 상자를 사기로 했지.",
+  kq:"대화 내용 일치 고르기" },
+{ sec:1, kind:"변형 ②", type:"sa",
+  q:"위 대화에서 여자아이가 지불해야 할 <u>총 금액</u>을 <b>숫자</b>로 쓰시오. (단위: won)",
+  answers:["20000","20,000","20000won","20,000won","20000원","2만","twentythousand","twentythousandwon"],
+  model:"20,000 (won)",
+  exp:"쿠키 한 상자 = <b>10,000원</b>이고 \"I'll take two.\"라고 했으니 10,000 × 2 = <b>20,000원</b>!",
+  kq:"대화 속 총 금액 계산해서 쓰기" },
+
+/* ── 원본 72번 세트 ── */
+{ sec:2, kind:"원본", type:"mc",
+  q:"다음 두 문장을 관계대명사를 이용하여 한 문장으로 만들 때, 빈칸 ⓐ에 들어갈 단어는?<br><span style='font-weight:400;display:inline-block;margin-top:8px'>→ ___ ___ ___ <b>ⓐ</b> ___ ___ ___ ___ ___ ___ ___ .</span>",
+  choices:["girl","she","and","has","clever"],
+  answer:3,
+  exp:"두 문장을 합치면 <b>The girl who has many wonderful talents is clever and kind.</b> — 두 번째 문장의 <b>She가 주격 관계대명사 who로</b> 바뀌면서 The girl 뒤에 붙어. 그래서 네 번째 칸 ⓐ는 <b>has</b>! ② she는 who로 바뀌어 사라지니까 절대 들어갈 수 없어.",
+  kq:"관계대명사 결합 문장의 빈칸 단어" },
+{ sec:2, kind:"변형 ①", type:"mc",
+  q:"위 두 문장을 관계대명사를 이용하여 한 문장으로 만든 것 중 어법상 <u>올바른</u> 것은?",
+  choices:["The girl who have many wonderful talents is clever and kind.","The girl who has many wonderful talents is clever and kind.","The girl she has many wonderful talents is clever and kind.","The girl which has many wonderful talents is clever and kind.","The girl who is clever and kind she has many wonderful talents."],
+  answer:1,
+  exp:"선행사 The girl은 <b>사람</b>이니까 관계대명사 <b>who</b>, 그리고 The girl이 <b>단수</b>니까 동사는 <b>has</b>! ①은 have(수 일치 X), ③⑤는 she가 남아 있고(관계대명사로 바뀌어야 함), ④ which는 사물에 쓰는 관계대명사야.",
+  kq:"관계대명사 결합 문장 어법 판단" },
+{ sec:2, kind:"변형 ②", type:"sa",
+  q:"관계대명사 <b>who</b>를 이용하여 두 문장을 한 문장으로 만들 때, 빈칸에 알맞은 말을 쓰시오.<br><span style='font-weight:400;display:inline-block;margin-top:8px'>→ The girl ______________________ is clever and kind.</span>",
+  answers:["who has many wonderful talents","whohasmanywonderfultalents"],
+  model:"who has many wonderful talents",
+  exp:"She has many wonderful talents.에서 <b>She → who</b>로 바꾸고 The girl 바로 뒤에 붙이면 돼: <b>who has many wonderful talents</b>. 선행사(The girl)가 단수라서 has 그대로!",
+  kq:"관계대명사 who로 문장 완성하기" },
+
+/* ── 원본 77번 세트 ── */
+{ sec:3, kind:"원본", type:"mc",
+  q:"밑줄 친 문장 (A)와 의미가 <u>다른</u> 것은?",
+  choices:["I will spend 50,000 won so as to buy him a present.","I will spend 50,000 won in order to buy him a present.","I will spend 50,000 won, so I will buy him a present.","I will spend 50,000 won so that I can buy him a present.","I will spend 50,000 won in order that I can buy him a present."],
+  answer:2,
+  exp:"(A)의 <b>to buy</b>는 '<b>사 주기 위해</b>'라는 <b>목적</b>이야. ① so as to, ② in order to, ④ so that + can, ⑤ in order that + can은 모두 목적(~하기 위해)을 나타내지만, ③은 콤마 뒤의 <b>so = '그래서'(결과)</b>라서 '5만 원을 쓸 거야, 그래서 선물을 사 줄 거야'라는 다른 의미가 돼.",
+  kq:"목적의 to부정사와 의미가 다른 문장" },
+{ sec:3, kind:"변형 ①", type:"mc",
+  q:"밑줄 친 (A)의 <b>to buy</b>와 쓰임이 <u>같은</u> 것은?",
+  choices:["I want something to drink.","My dream is to be a singer.","I went to the store to get some milk.","To learn English is not easy.","She has a lot of homework to do."],
+  answer:2,
+  exp:"(A)의 to buy는 '<b>~하기 위해</b>'라는 <b>부사적 용법(목적)</b>. ③ to get도 '우유를 사기 위해' 가게에 간 거니까 목적! ①⑤는 명사를 꾸미는 형용사적 용법, ②는 보어(명사적), ④는 주어(명사적)야.",
+  kq:"to부정사 부사적 용법(목적) 구분" },
+{ sec:3, kind:"변형 ②", type:"sa",
+  q:"밑줄 친 (A)를 <b>so that</b>을 이용해 같은 의미로 바꿔 쓸 때, 빈칸에 알맞은 <b>두 단어</b>를 쓰시오.<br><span style='font-weight:400;display:inline-block;margin-top:8px'>→ I will spend 50,000 won so that I ______ ______ him a present.</span>",
+  answers:["can buy","canbuy"],
+  model:"can buy",
+  exp:"목적의 to부정사는 <b>so that + 주어 + can</b>으로 바꿀 수 있어: I will spend 50,000 won so that I <b>can buy</b> him a present.",
+  kq:"to부정사 → so that ~ can 전환" },
+
+/* ── 원본 79번 세트 ── */
+{ sec:4, kind:"원본", type:"mc",
+  q:"다음 우리말과 일치하도록 &lt;조건&gt;에 맞춰 영작했을 때, <u>10번째</u>에 올 단어로 가장 적절한 것은?",
+  choices:["various","prices","of","better","products"],
+  answer:4,
+  exp:"완성 문장: <b>A smart consumer who compares the various prices of products will eventually find a better deal.</b><br>A① smart② consumer③ who④ compares⑤ the⑥ various⑦ prices⑧ of⑨ <b>products⑩</b> will⑪ eventually⑫ find⑬ a⑭ better⑮ deal⑯ — 10번째는 <b>products</b>!",
+  kq:"조건 배열 영작 · 10번째 단어" },
+{ sec:4, kind:"변형 ①", type:"mc",
+  q:"같은 &lt;조건&gt;으로 문장을 완성했을 때, <u>4번째</u>에 올 단어로 가장 적절한 것은?",
+  choices:["consumer","who","compares","smart","will"],
+  answer:1,
+  exp:"A① smart② consumer③ <b>who④</b> compares⑤ ... — '비교하는 현명한 소비자'는 <b>A smart consumer + who(주격 관계대명사)</b> 순서로 이어지니까 4번째는 <b>who</b>!",
+  kq:"조건 배열 영작 · 4번째 단어" },
+{ sec:4, kind:"변형 ②", type:"sa",
+  q:"위 &lt;조건&gt;의 단어를 모두 사용하여 우리말과 일치하는 <b>영어 문장 전체</b>를 쓰시오.",
+  answers:["a smart consumer who compares the various prices of products will eventually find a better deal","asmartconsumerwhocomparesthevariouspricesofproductswilleventuallyfindabetterdeal"],
+  model:"A smart consumer who compares the various prices of products will eventually find a better deal.",
+  exp:"정답: <b>A smart consumer who compares the various prices of products will eventually find a better deal.</b><br>뼈대는 A smart consumer will find a better deal이고, who ~ products가 consumer를 뒤에서 꾸며 줘. eventually는 will 뒤!",
+  kq:"조건 배열 영작 · 문장 전체 쓰기" },
+
+/* ── 원본 83번 세트 ── */
+{ sec:5, kind:"원본", type:"mc",
+  q:"윗글의 밑줄 친 ⓐ~ⓔ의 어법성을 올바로 판별하지 <u>못한</u> 사람은?",
+  choices:["Jina: hot의 최상급은 마지막 자음 t를 하나 더 붙여서 hottest로 만들어야 해.","Yoonsu: 단수 명사 dress를 수식해야 하므로 that으로 바꾸어 적어야 해.","Jeongin: 주격 관계대명사 뒤의 동사는 선행사한테 단수, 복수 형태를 맞추어야 해. 선행사가 people로 복수이기 때문에 동사에 '-s'를 붙이는 게 맞아.","Jaewon: 문장의 동사로 쓰인 spread는 보어나 목적어를 필요로 하지 않아. 따라서 형용사 형태가 아니라 부사가 되어야 하고, 이건 접속사 and로 이어진 widely로도 알 수 있어.","Kyeongwon: 앞의 부사절에 나오는 a product를 지칭하는 대명사가 되어야 해. 따라서 복수 형태가 아니라 단수 형태로 it을 써야만 해."],
+  answer:2,
+  exp:"ⓒ의 선행사는 <b>a lot of people(복수)</b>이 맞지만, 복수 주어에는 동사에 <b>-s를 붙이지 않아</b>! falls → <b>fall</b>로 고쳐야 하는데 Jeongin은 반대로 '-s를 붙이는 게 맞다'고 했으니 잘못 판별한 거야. 나머지: ⓐ hottest, ⓑ that, ⓓ quickly, ⓔ it — 모두 올바른 판단!",
+  kq:"어법성 판단을 잘못한 사람 고르기" },
+{ sec:5, kind:"변형 ①", type:"mc",
+  q:"윗글의 밑줄 친 ⓐ~ⓔ를 어법에 맞게 고친 것으로 적절하지 <u>않은</u> 것은?",
+  choices:["ⓐ hotest → hottest","ⓑ those → that","ⓒ falls → fall","ⓓ quick → quickly","ⓔ them → they"],
+  answer:4,
+  exp:"ⓔ는 앞에 나온 <b>a product(단수)</b>를 가리키는 대명사인데 have의 <b>목적어</b> 자리야. 그러니까 주격 they가 아니라 목적격이자 단수인 <b>it</b>으로 고쳐야 해! 나머지 ①~④는 모두 올바르게 고쳤어.",
+  kq:"어법 고치기가 틀린 것 고르기" },
+{ sec:5, kind:"변형 ②", type:"sa",
+  q:"윗글의 밑줄 친 ⓒ <b>falls</b>를 어법에 맞게 고쳐 쓰시오.",
+  answers:["fall"],
+  model:"fall",
+  exp:"주격 관계대명사 who 뒤의 동사는 <b>선행사</b>에 수를 맞춰. 선행사가 <b>a lot of people(복수)</b>이니까 falls → <b>fall</b>!",
+  kq:"관계대명사절 동사 수일치 고치기" },
+
+/* ── 원본 84번 세트 ── */
+{ sec:6, kind:"원본", type:"mc",
+  q:"다음 글의 뒤에 이어질 내용까지 고려하여, 글의 성격을 나타내는 단어로 가장 <u>적절한</u> 것은?",
+  choices:["narrative","persuasive","descriptive","explanatory","argumentative"],
+  answer:3,
+  exp:"이 글 뒤에는 앵커링 효과 같은 <b>다양한 마케팅 전략을 하나하나 설명하는</b> 내용이 이어져. 무언가를 사라고 설득(persuasive)하거나 주장(argumentative)하는 게 아니라, 전략을 <b>알기 쉽게 설명해 주는</b> 글이니까 ④ <b>explanatory(설명적인)</b>! 'hold on!' 같은 말투 때문에 persuasive로 착각하기 쉬워.",
+  kq:"글의 성격(explanatory) 파악" },
+{ sec:6, kind:"변형 ①", type:"mc",
+  q:"윗글을 쓴 목적으로 가장 적절한 것은?",
+  choices:["특정 상품을 광고하기 위해","마케팅 전략을 설명하여 독자가 더 현명한 소비자가 되도록 돕기 위해","쇼핑의 즐거움을 생생하게 묘사하기 위해","자신의 쇼핑 실수담을 들려주기 위해","온라인 쇼핑의 위험성만을 경고하기 위해"],
+  answer:1,
+  exp:"마지막 문장 <b>\"Learning about them will make you a smarter shopper.\"</b>가 핵심! 마케팅 전략들을 <b>배우게(설명해) 해서 더 현명한 소비자로</b> 만들어 주려는 글이야.",
+  kq:"글의 목적 파악" },
+{ sec:6, kind:"변형 ②", type:"sa",
+  q:"윗글의 내용에 맞게 빈칸에 들어갈 단어를 <b>본문에서 그대로</b> 찾아 쓰시오.<br><span style='font-weight:400;display:inline-block;margin-top:8px'>Learning about various marketing strategies will make you a ______ shopper.</span>",
+  answers:["smarter"],
+  model:"smarter",
+  exp:"본문 마지막 문장 그대로: make you a <b>smarter</b> shopper. — smart의 <b>비교급</b>(더 현명한)이라는 것까지 기억!",
+  kq:"본문 어휘 빈칸 채우기" },
+
+/* ── 원본 90번 세트 ── */
+{ sec:7, kind:"원본", type:"mc",
+  q:"글의 흐름으로 보아, 주어진 문장이 들어가기에 가장 <u>적절한</u> 곳은?",
+  choices:["①","②","③","④","⑤"],
+  answer:4,
+  exp:"주어진 문장의 <b>In your case(너의 경우에는)</b>가 힌트! ④ 뒤 문장이 \"<b>Usually</b>, the first piece of information becomes an 'anchor'...\"라고 <b>일반적인 설명</b>을 한 다음, '너의 경우에는 50달러 립스틱이 앵커였다'고 <b>소미의 사례에 적용</b>하는 순서가 자연스러워. 그래서 정답은 <b>⑤</b>!",
+  kq:"주어진 문장 삽입 위치" },
+{ sec:7, kind:"변형 ①", type:"mc",
+  q:"윗글의 내용과 일치하지 <u>않는</u> 것은?",
+  choices:["Somi's budget is 30 dollars.","Somi is trying to buy a 40-dollar lipstick.","The salesperson showed Somi a 50-dollar lipstick first.","The 40-dollar lipstick is within Somi's budget.","The first piece of information can influence the shopper's decision."],
+  answer:3,
+  exp:"소미의 예산은 <b>30달러</b>인데 립스틱은 <b>40달러</b>니까 예산을 <b>넘어</b>. ④ '예산 안에 있다'가 틀렸지! 40달러가 싸게 '느껴진' 건 50달러를 먼저 봤기 때문(앵커링 효과)일 뿐이야.",
+  kq:"글의 내용 일치 판단" },
+{ sec:7, kind:"변형 ②", type:"sa",
+  q:"윗글의 내용에 맞게 빈칸에 들어갈 단어를 <b>본문에서 그대로</b> 찾아 쓰시오.<br><span style='font-weight:400;display:inline-block;margin-top:8px'>Usually, the first piece of information becomes an \"______\" and influences the shopper's decision.</span>",
+  answers:["anchor"],
+  model:"anchor",
+  exp:"첫 번째 정보가 '<b>anchor(닻)</b>'가 되어 소비자의 판단 기준을 끌어당긴다 — 이게 바로 <b>anchoring effect(앵커링 효과)</b>야!",
+  kq:"핵심 어휘(anchor) 쓰기" }
+];
+
+/* ══════ 상태 ══════ */
+var studentName = "이주연";
+var startTime = 0;
+var answered = new Array(QUESTIONS.length).fill(null); // {ok, chosen}
+var answeredCount = 0;
+var finished = false;
+
+/* ══════ 유틸 ══════ */
+function norm(s){
+  return (s||"").toLowerCase().replace(/[.,!?'"’‘“”]/g,"").replace(/\s+/g," ").trim();
+}
+function normTight(s){ return norm(s).replace(/ /g,""); }
+function stripTags(s){ var d=document.createElement("div"); d.innerHTML=s.replace(/<br\s*\/?>/gi,"\n"); return d.textContent; }
+function toast(msg){
+  var t=document.getElementById("toast");
+  t.textContent=msg; t.classList.add("show");
+  clearTimeout(t._tm); t._tm=setTimeout(function(){t.classList.remove("show");},2600);
+}
+
+/* ══════ 렌더링 ══════ */
+function render(){
+  var area=document.getElementById("quiz-area");
+  var html="";
+  SECTIONS.forEach(function(sec,si){
+    html+='<div class="sec-head"><span class="sec-no">'+sec.no+'</span><span class="sec-title">'+sec.area+' · '+sec.skill+'</span></div>';
+    html+='<div class="passage">'+sec.passage+'</div>';
+    QUESTIONS.forEach(function(q,qi){
+      if(q.sec!==si) return;
+      var typeBadge = q.type==="mc" ? '<span class="badge b-mc">객관식</span>' : '<span class="badge b-sa">주관식</span>';
+      var kindBadge = q.kind==="원본" ? '<span class="badge b-org">'+sec.no+' 그대로</span>' : '<span class="badge b-var">'+sec.no+' '+q.kind+'</span>';
+      html+='<div class="card q-card" id="qc'+qi+'" data-qi="'+qi+'">';
+      html+='<div class="badges">'+typeBadge+kindBadge+'<span class="badge b-skill">'+sec.skill+'</span></div>';
+      html+='<div class="qno">Q'+(qi+1)+' / 24</div>';
+      html+='<div class="qtext">'+q.q+'</div>';
+      if(q.type==="mc"){
+        html+='<div class="choices">';
+        q.choices.forEach(function(c,ci){
+          html+='<button type="button" data-qi="'+qi+'" data-ci="'+ci+'"><span class="cn">'+CN[ci]+'</span>'+c+'</button>';
+        });
+        html+='</div>';
+      }else{
+        html+='<div class="sa-row"><input type="text" id="sa'+qi+'" data-qi="'+qi+'" placeholder="정답을 입력하세요" autocomplete="off"><button type="button" data-sa="'+qi+'">제출</button></div>';
+      }
+      html+='<div class="verdict" id="vd'+qi+'"></div>';
+      html+='<div class="exp-box" id="exp'+qi+'"></div>';
+      html+='</div>';
+    });
+  });
+  html+='<p class="lock-note">🔒 해설은 24문제를 모두 푼 뒤 한꺼번에 열려요!</p>';
+  area.innerHTML=html;
+
+  area.querySelectorAll(".choices button").forEach(function(b){
+    b.addEventListener("click",function(){ pickMC(+b.dataset.qi,+b.dataset.ci); });
+  });
+  area.querySelectorAll("button[data-sa]").forEach(function(b){
+    b.addEventListener("click",function(){ submitSA(+b.dataset.sa); });
+  });
+  area.querySelectorAll(".sa-row input").forEach(function(inp){
+    inp.addEventListener("keydown",function(e){
+      if(e.key==="Enter"){ e.preventDefault(); submitSA(+inp.dataset.qi); }
+    });
+  });
+}
+
+function pickMC(qi,ci){
+  if(answered[qi]||finished&&false) return;
+  if(answered[qi]) return;
+  var q=QUESTIONS[qi];
+  var ok=(ci===q.answer);
+  answered[qi]={ok:ok,chosen:CN[ci]+" "+stripTags(q.choices[ci])};
+  var card=document.getElementById("qc"+qi);
+  card.querySelectorAll(".choices button").forEach(function(b,bi){
+    b.disabled=true;
+    if(bi===ci) b.classList.add("picked");
+  });
+  showVerdict(qi,ok);
+  afterAnswer();
+}
+
+function submitSA(qi){
+  if(answered[qi]) return;
+  var inp=document.getElementById("sa"+qi);
+  var val=inp.value;
+  if(!norm(val)){ toast("답을 입력한 뒤 제출해 줘!"); inp.focus(); return; }
+  var q=QUESTIONS[qi];
+  var ok=q.answers.some(function(a){ return norm(val)===norm(a)||normTight(val)===normTight(a); });
+  answered[qi]={ok:ok,chosen:val.trim()};
+  inp.disabled=true;
+  var btn=document.querySelector('button[data-sa="'+qi+'"]');
+  if(btn){btn.disabled=true;btn.style.opacity=".5";}
+  showVerdict(qi,ok);
+  afterAnswer();
+}
+
+function showVerdict(qi,ok){
+  var v=document.getElementById("vd"+qi);
+  v.style.display="block";
+  v.className="verdict "+(ok?"ok":"no");
+  v.textContent= ok ? "🎉 정답!" : "🥲 아쉬워요 (해설은 모두 푼 뒤 공개!)";
+}
+
+function afterAnswer(){
+  answeredCount++;
+  document.getElementById("bar-count").textContent=answeredCount+" / "+QUESTIONS.length;
+  document.getElementById("bar-fill").style.width=(answeredCount/QUESTIONS.length*100)+"%";
+  if(answeredCount>=QUESTIONS.length) finish();
+}
+
+/* ══════ 완료 ══════ */
+function finish(){
+  if(finished) return; finished=true;
+  // 해설 일괄 해제
+  QUESTIONS.forEach(function(q,qi){
+    var box=document.getElementById("exp"+qi);
+    var a=answered[qi];
+    var head=a.ok ? '<div class="exp-head ok">✅ 정답!</div>'
+      : '<div class="exp-head no">❌ 내 답: '+escapeHtml(a.chosen)+' → 정답: '+correctText(qi)+'</div>';
+    box.innerHTML=head+q.exp;
+    box.style.display="block";
+  });
+  var note=document.querySelector(".lock-note");
+  if(note) note.textContent="🔓 모든 해설이 열렸어요! 위로 올려서 확인해 보세요.";
+
+  var score=answered.filter(function(a){return a.ok;}).length;
+  var wrongNos=[]; var detail=[];
+  answered.forEach(function(a,i){
+    if(!a.ok) wrongNos.push(i+1);
+    detail.push({no:i+1, ok:a.ok, chosen:a.chosen, answer:correctPlain(i)});
+  });
+  var dur=Math.round((Date.now()-startTime)/1000);
+
+  document.getElementById("score-line").textContent=score+" / "+QUESTIONS.length;
+  document.getElementById("score-sub").textContent="정답률 "+Math.round(score/QUESTIONS.length*100)+"% · 풀이 시간 "+fmtDur(dur);
+  var rc=document.getElementById("result-card");
+  rc.style.display="block";
+
+  var msg=buildKakao(score,wrongNos,dur);
+  document.getElementById("kakao-preview").textContent=msg;
+  window._kakaoMsg=msg;
+
+  rc.scrollIntoView({behavior:"smooth"});
+
+  engfitSubmitWithStatus({
+    quizId:"clinic-ljy-0705",
+    quizTitle:"이주연 오답 클리닉 7/5 (4단원)",
+    student:studentName,
+    score:score,
+    total:QUESTIONS.length,
+    wrong:wrongNos,
+    durationSec:dur,
+    detail:detail
+  });
+}
+
+function correctText(qi){
+  var q=QUESTIONS[qi];
+  return q.type==="mc" ? CN[q.answer]+" "+escapeHtml(stripTags(q.choices[q.answer])) : "<b>"+escapeHtml(q.model)+"</b>";
+}
+function correctPlain(qi){
+  var q=QUESTIONS[qi];
+  return q.type==="mc" ? CN[q.answer]+" "+stripTags(q.choices[q.answer]) : q.model;
+}
+function escapeHtml(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function fmtDur(sec){
+  var m=Math.floor(sec/60), s=sec%60;
+  return m>0 ? m+"분 "+s+"초" : s+"초";
+}
+
+/* ══════ 카톡 메시지 빌더 ══════ */
+function buildKakao(score,wrongNos,dur){
+  var total=QUESTIONS.length;
+  var rate=Math.round(score/total*100);
+  var cheer;
+  if(score===total) cheer="와! "+studentName+", 전부 다 맞혔어요!! 정말 대단해요 🌟";
+  else if(rate>=80) cheer="정말 잘했어요! 거의 다 맞혔네요 👍";
+  else if(rate>=60) cheer="잘 풀었어요! 몇 개만 더 보면 완벽해요 💪";
+  else if(rate>=40) cheer="끝까지 푼 게 정말 멋져요! 오답 같이 보면 금방 늘어요 🌱";
+  else cheer="어려운 단원 끝까지 푼 것만으로도 박수! 같이 차근차근 봐요 🤗";
+
+  var L=[];
+  L.push("안녕하세요 지나티처님! 🌸");
+  L.push("");
+  L.push("["+studentName+" · 4단원 오답 클리닉 결과] (7/5)");
+  L.push(cheer);
+  L.push("");
+  L.push("📊 결과 요약");
+  L.push("· 총 문제: "+total+"문제 (틀린 문제 8개 × 원본1+변형2)");
+  L.push("· 정답: "+score+"개 / 오답: "+(total-score)+"개");
+  L.push("· 정답률: "+rate+"%");
+  L.push("· 풀이 시간: "+fmtDur(dur));
+
+  if(score===total){
+    L.push("");
+    L.push("🎉🎉 모든 문제를 다 맞혔어요!! 🎉🎉");
+    L.push(studentName+" 정말 자랑스러워요 ✨");
+  }else{
+    wrongNos.forEach(function(no){
+      var qi=no-1, q=QUESTIONS[qi], sec=SECTIONS[q.sec], a=answered[qi];
+      L.push("");
+      L.push("━━━━━━━━━━━━");
+      L.push("❌ 문제 "+no+" ["+sec.no+" · "+(q.kind==="원본"?"원본 그대로":q.kind)+"]");
+      L.push("유형: "+sec.skill+" ("+(q.type==="mc"?"객관식":"주관식")+")");
+      L.push("❓ "+q.kq);
+      L.push("📝 학생 답: "+a.chosen);
+      L.push("✅ 정답: "+correctPlain(qi));
+      L.push("💡 해설: "+stripTags(q.exp).replace(/\n+/g," ").trim());
+      L.push("👉 다음엔 꼭 맞힐 수 있어요!");
+    });
+  }
+  L.push("");
+  L.push("수고했어~~ ㅎㅎㅎ");
+  return L.join("\n");
+}
+
+/* ══════ 시작 & 카톡 복사 ══════ */
+var nameInput=document.getElementById("name-input");
+var startBtn=document.getElementById("start-btn");
+nameInput.addEventListener("input",function(){ startBtn.disabled=nameInput.value.trim().length===0; });
+
+startBtn.addEventListener("click",function(){
+  studentName=nameInput.value.trim()||"이주연";
+  startTime=Date.now();
+  document.getElementById("start-card").classList.add("hidden");
+  document.getElementById("quiz-area").classList.remove("hidden");
+  document.getElementById("bar-wrap").style.display="block";
+  render();
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+
+document.getElementById("kakao-btn").addEventListener("click",function(){
+  var msg=window._kakaoMsg||"";
+  function done(){ toast("메시지가 복사됐어요! 카톡 열어서 붙여넣기 하세요 📋"); }
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(msg).then(done).catch(function(){ fallbackCopy(msg); done(); });
+  }else{ fallbackCopy(msg); done(); }
+});
+function fallbackCopy(text){
+  var ta=document.createElement("textarea");
+  ta.value=text; ta.style.position="fixed"; ta.style.opacity="0";
+  document.body.appendChild(ta); ta.select();
+  try{ document.execCommand("copy"); }catch(e){}
+  document.body.removeChild(ta);
+}
+
+/* ══════ 키보드 접근성: 화면에 가장 잘 보이는 미답 문제에 매핑 ══════ */
+function mostVisibleUnanswered(){
+  var best=null,bestArea=0;
+  document.querySelectorAll(".q-card").forEach(function(card){
+    var qi=+card.dataset.qi;
+    if(answered[qi]) return;
+    var r=card.getBoundingClientRect();
+    var vis=Math.min(r.bottom,window.innerHeight)-Math.max(r.top,0);
+    if(vis>bestArea){ bestArea=vis; best=qi; }
+  });
+  return best;
+}
+document.addEventListener("keydown",function(e){
+  if(finished) return;
+  if(document.getElementById("start-card").classList.contains("hidden")===false) return;
+  var tag=(document.activeElement&&document.activeElement.tagName)||"";
+  if(tag==="INPUT"||tag==="TEXTAREA") return; // 주관식 입력 중엔 Enter 리스너가 처리
+  if(e.key>="1"&&e.key<="5"){
+    var qi=mostVisibleUnanswered();
+    if(qi===null) return;
+    var q=QUESTIONS[qi];
+    if(q.type==="mc"){
+      var ci=+e.key-1;
+      if(ci<q.choices.length){ pickMC(qi,ci); e.preventDefault(); }
+    }else{
+      var inp=document.getElementById("sa"+qi);
+      if(inp){ inp.focus(); }
+    }
+  }
+});
+</script>
+</body>
+</html>
